@@ -496,21 +496,20 @@ public static class projects
         // See https://docs.nuget.org/ndocs/schema/target-frameworks
         config_csproj cfg;
 
-        // Prefer netstandard11 when compatible
         switch (env)
         {
-            case "net45":
-                cfg = find("core", "profile111");
+            case "net35":
+                cfg = find("core", env);
                 break;
             case "net40":
                 cfg = find("core", "profile136");
                 break;
-            case "win81":
-                cfg = find("core", "profile111");
-                break;
             default:
                 cfg = find("core", "netstandard11");
-                //cfg = find("core", "profile259");
+                if (cfg == null)
+                    cfg = find("core", "profile259");
+                if (cfg == null)
+                    cfg = find("core", "profile111");
                 break;
         }
 
