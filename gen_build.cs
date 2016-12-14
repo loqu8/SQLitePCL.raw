@@ -4612,39 +4612,35 @@ public static class gen
 
     public class CustomBuild
     {
-        private string _what, _libRoot, _libPattern;
-        private List<config_csproj> _items_csproj;
-
         public CustomBuild(string what, string libRoot, string libPattern)
         {
-            _what = what;
-            _libRoot = libRoot;
-            _libPattern = libPattern;
+            this.what = what;
+            this.libRoot = libRoot;
+            this.libPattern = libPattern;
 
             init_csproj();
         }
 
-        public string What { get { return _what; } }
-        public string LibRoot { get { return _libRoot; } }
-        public string LibPattern { get { return _libPattern; } }
-        public List<config_csproj> ItemsCsproj { get { return _items_csproj; } }
+        public string what { get; set; }
+        public string libRoot { get; set; }
+        public string libPattern { get; set; }
+        public List<config_csproj> items_csproj { get;set; }
 
         private void init_csproj()
         {
-            _items_csproj = new List<config_csproj>();
-            _items_csproj.Add(config_csproj.create_core("net45"));
-            _items_csproj.Add(config_csproj.create_core("ios_unified"));
-            _items_csproj.Add(config_csproj.create_core("macos"));
-            _items_csproj.Add(config_csproj.create_core("android"));
-            _items_csproj.Add(config_csproj.create_core("uwp10"));
-            _items_csproj.Add(config_csproj.create_core("profile111"));
+            items_csproj = new List<config_csproj>();
+            items_csproj.Add(config_csproj.create_core("netstandard11"));
 
-            // TODO: reference the profile111 core
-            _items_csproj.Add(config_csproj.create_provider(_what, "net45"));
-            _items_csproj.Add(config_csproj.create_provider("internal", "ios_unified"));
-            _items_csproj.Add(config_csproj.create_provider(_what, "macos"));
-            _items_csproj.Add(config_csproj.create_provider(_what, "android"));
-            _items_csproj.Add(config_csproj.create_provider(_what, "uwp10"));
+            items_csproj.Add(config_csproj.create_provider(what, "net45"));
+            items_csproj.Add(config_csproj.create_provider("internal", "ios_unified"));
+            items_csproj.Add(config_csproj.create_provider(what, "macos"));
+            items_csproj.Add(config_csproj.create_provider(what, "android"));
+            items_csproj.Add(config_csproj.create_provider(what, "uwp10"));
+
+            foreach (config_csproj cfg in items_csproj)
+            {
+                cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+            }
         }
     }
 
@@ -4668,10 +4664,24 @@ public static class gen
             var customBuild = new CustomBuild(what, libRoot, libPattern);
 
             // e.g., generates pinvoke_custom_sqlite3.cs
-            Utils.WritePinvoke(root, top, customBuild.What);
+            Utils.WritePinvoke(root, top, customBuild.what);
             Utils.WritePinvoke(root, top, "ios_internal", "internal", "__Internal");
 
+            // --------------------------------
+            // generate all the AssemblyInfo files
 
+            foreach (config_csproj cfg in customBuild.items_csproj)
+            {
+                gen_assemblyinfo(cfg, root, top);
+            }
+
+            // --------------------------------
+            // generate all the project files
+
+            foreach (config_csproj cfg in customBuild.items_csproj)
+            {
+                gen_csproj(cfg, root, top);
+            }
         }
         else
         {
