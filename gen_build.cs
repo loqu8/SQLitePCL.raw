@@ -4590,7 +4590,62 @@ public static class gen
         }
     }
 
-	public static void Main(string[] args)
+    public static class Utils
+    {
+        private static string cs_pinvoke;
+
+        public static void WritePinvoke(string root, string top, string what, string simpleDll = null, string actualDll = null)
+        {
+            if (string.IsNullOrEmpty(cs_pinvoke))
+                cs_pinvoke = File.ReadAllText(Path.Combine(root, "src/cs/sqlite3_pinvoke.cs"));
+
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, string.Format("pinvoke_{0}.cs", what))))
+            {
+                string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", simpleDll ?? what);
+                string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", actualDll ?? what);
+                tw.Write(cs2);
+            }
+        }
+    }
+
+    public class CustomBuild
+    {
+        private string _what, _libRoot, _libPattern;
+        private List<config_csproj> _items_csproj;
+
+        public CustomBuild(string what, string libRoot, string libPattern)
+        {
+            _what = what;
+            _libRoot = libRoot;
+            _libPattern = libPattern;
+
+            init_csproj();
+        }
+
+        public string What { get { return _what; } }
+        public string LibRoot { get { return _libRoot; } }
+        public string LibPattern { get { return _libPattern; } }
+        public List<config_csproj> ItemsCsproj { get { return _items_csproj; } }
+
+        private void init_csproj()
+        {
+            _items_csproj.Add(config_csproj.create_core("net45"));
+            _items_csproj.Add(config_csproj.create_core("ios_unified"));
+            _items_csproj.Add(config_csproj.create_core("macos"));
+            _items_csproj.Add(config_csproj.create_core("android"));
+            _items_csproj.Add(config_csproj.create_core("uwp10"));
+            _items_csproj.Add(config_csproj.create_core("profile111"));
+
+            // TODO: reference the profile111 core
+            _items_csproj.Add(config_csproj.create_provider(_what, "net45"));
+            _items_csproj.Add(config_csproj.create_provider("internal", "ios_unified"));
+            _items_csproj.Add(config_csproj.create_provider(_what, "macos"));
+            _items_csproj.Add(config_csproj.create_provider(_what, "android"));
+            _items_csproj.Add(config_csproj.create_provider(_what, "uwp10"));
+        }
+    }
+
+    public static void Main(string[] args)
 	{
 		projects.init();
 
