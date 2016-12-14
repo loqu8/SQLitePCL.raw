@@ -493,28 +493,33 @@ public static class projects
 
 	public static config_csproj find_core(string env)
 	{
-        config_csproj cfg = find("core", env);
+        // See https://docs.nuget.org/ndocs/schema/target-frameworks
+        config_csproj cfg;
+
+        // Prefer netstandard11 when compatible
+        switch (env)
+        {
+            case "net45":
+                cfg = find("core", "profile111");
+                break;
+            case "net40":
+                cfg = find("core", "profile136");
+                break;
+            case "win81":
+                cfg = find("core", "profile111");
+                break;
+            default:
+                cfg = find("core", "netstandard11");
+                //cfg = find("core", "profile259");
+                break;
+        }
+
+        // as a last resort, find the matching core, e.g., net45 gets net45 core
         if (cfg == null)
         {
-            // TODO need to find a core that is compatible with env
-            // TODO this should be smarter
-            switch (env)
-            {
-                case "net40":
-                    cfg = find("core", "profile136");
-                    break;
-                case "net45":
-                    cfg = find("core", "profile111");
-                    break;
-                case "win81":
-                    cfg = find("core", "profile111");
-                    break;
-                default:
-                    cfg = find("core", "netstandard11");
-                    //cfg = find("core", "profile259");
-                    break;
-            }
+            cfg = find("core", env);
         }
+
         if (cfg != null)
         {
             return cfg;
