@@ -1075,7 +1075,9 @@ public class config_csproj : config_info
                         cfg.csfiles_bld.Add("pinvoke_sqlcipher.cs");
                         break;
                     default:
-                        throw new Exception(what);
+                        //throw new Exception(what);
+                        cfg.csfiles_bld.Add(string.Format("pinvoke_{0}.cs", cfg.what));
+                        break;
                 }
                 break;
         }
@@ -4629,6 +4631,7 @@ public static class gen
 
         private void init_csproj()
         {
+            _items_csproj = new List<config_csproj>();
             _items_csproj.Add(config_csproj.create_core("net45"));
             _items_csproj.Add(config_csproj.create_core("ios_unified"));
             _items_csproj.Add(config_csproj.create_core("macos"));
