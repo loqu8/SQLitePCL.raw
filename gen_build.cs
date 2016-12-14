@@ -991,7 +991,9 @@ public class config_csproj : config_info
                         cfg.defines.Add("IOS_PACKAGED_SQLCIPHER");
                         break;
                     default:
-                        throw new Exception(what);
+                        //throw new Exception(what);
+                        cfg.defines.Add(string.Format("IOS_PACKAGED_{0}", cfg.what.ToUpper()));
+                        break;
                 }
                 break;
         }
@@ -1009,7 +1011,9 @@ public class config_csproj : config_info
                         cfg.csfiles_src.Add("imp_ios_internal.cs");
                         break;
                     default:
-                        throw new Exception(what);
+                        //throw new Exception(what);
+                        cfg.csfiles_src.Add("imp_ios_internal.cs");
+                        break;
                 }
                 break;
             default:
@@ -2311,6 +2315,38 @@ public static class gen
         fix_version(project_dot_json);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="libRoot"></param>
+    /// <param name="f"></param>
+    /// <param name="what">e.g., custom_sqlite</param>
+    /// <param name="which">e.g., sqlite</param>
+    /// <param name="libPattern">e.g., "$which\\$platform\\$arch\\lib\\$lib"</param>
+    private static void write_android_native_libs_patterned(string libRoot, XmlWriter f, string what, string which, string libPattern)
+    {
+        var archs = new List<string> {
+            "x86", "x86_64", "armeabi", "armeabi-v7a", "arm64-v8a",
+//            "mips", "mips64"
+        };
+
+        string lib = string.Format("lib{0}.so", what);
+        string libPath = libPattern
+            .Replace("$which", which)
+            .Replace("$platform", "android")
+            .Replace("$arch", "{{0}}")
+            .Replace("$lib", lib);
+
+        foreach (var arch in archs)
+        {
+            f.WriteStartElement("EmbeddedNativeLibrary");
+            f.WriteAttributeString("Include", Path.Combine(libRoot, string.Format(libPath, arch)));
+            f.WriteElementString("CopyToOutputDirectory", "Always");
+            f.WriteElementString("Link", string.Format("{0}\\{1}", arch, lib));
+            f.WriteEndElement(); // EmbeddedNativeLibrary
+        }
+    }
+
     private static void write_android_native_libs(string root, XmlWriter f, string which)
     {
         f.WriteStartElement("EmbeddedNativeLibrary");
@@ -2417,8 +2453,10 @@ public static class gen
 		}
 	}
 
-	private static void gen_csproj(config_csproj cfg, string root, string top)
+	private static void gen_csproj(config_csproj cfg, string root, string top, string libRoot = null, string libPattern = null)
 	{
+        if (libRoot == null) libRoot = root;
+
 		XmlWriterSettings settings = new XmlWriterSettings();
 		settings.Indent = true;
 		settings.OmitXmlDeclaration = false;
@@ -2574,39 +2612,39 @@ public static class gen
 
             if (cfg.area == "lib")
             {
-			switch (cfg.env)
-			{
-				case "ios_unified":
+                switch (cfg.env)
+                {
+                    case "ios_unified":
                         if (cfg.what == "e_sqlite3")
                         {
                             f.WriteStartElement("ItemGroup");
                             // TODO warning says this is deprecated
                             f.WriteStartElement("ManifestResourceWithNoCulture");
                             // TODO underscore
-                            f.WriteAttributeString("Include", Path.Combine(root, "apple\\libs\\ios\\sqlite3\\e_sqlite3.a"));
+                            f.WriteAttributeString("Include", Path.Combine(libRoot, "apple\\libs\\ios\\sqlite3\\e_sqlite3.a"));
                             f.WriteElementString("Link", "e_sqlite3.a");
                             f.WriteEndElement(); // ManifestResourceWithNoCulture
                             f.WriteEndElement(); // ItemGroup
                         }
-			else if (cfg.what == "sqlcipher")
+                        else if (cfg.what == "sqlcipher")
                         {
                             f.WriteStartElement("ItemGroup");
 
                             // TODO warning says this is deprecated
                             f.WriteStartElement("ManifestResourceWithNoCulture");
-                            f.WriteAttributeString("Include", Path.Combine(root, "couchbase-lite-libsqlcipher\\libs\\ios\\libsqlcipher.a"));
+                            f.WriteAttributeString("Include", Path.Combine(libRoot, "couchbase-lite-libsqlcipher\\libs\\ios\\libsqlcipher.a"));
                             f.WriteElementString("Link", "libsqlcipher.a");
                             f.WriteEndElement(); // ManifestResourceWithNoCulture
 
                             f.WriteEndElement(); // ItemGroup
                         }
-			else
-			{
-				throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
-			}
-					break;
+                        else
+                        {
+                            throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
+                        }
+                        break;
 
-					case "watchos":
+                    case "watchos":
                         if (cfg.what == "e_sqlite3")
                         {
                             f.WriteStartElement("ItemGroup");
@@ -2618,7 +2656,7 @@ public static class gen
                             f.WriteEndElement(); // ManifestResourceWithNoCulture
                             f.WriteEndElement(); // ItemGroup
                         }
-            else if (cfg.what == "sqlcipher")
+                        else if (cfg.what == "sqlcipher")
                         {
                             f.WriteStartElement("ItemGroup");
 
@@ -2630,11 +2668,11 @@ public static class gen
 
                             f.WriteEndElement(); // ItemGroup
                         }
-            else
-            {
-                throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
-            }
-                    break;
+                        else
+                        {
+                            throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
+                        }
+                        break;
 
                     case "ios_classic":
                         if (cfg.what == "e_sqlite3")
@@ -2648,7 +2686,7 @@ public static class gen
                             f.WriteEndElement(); // ManifestResourceWithNoCulture
                             f.WriteEndElement(); // ItemGroup
                         }
-			else if (cfg.what == "sqlcipher")
+                        else if (cfg.what == "sqlcipher")
                         {
                             f.WriteStartElement("ItemGroup");
 
@@ -2667,32 +2705,35 @@ public static class gen
 
                             f.WriteEndElement(); // ItemGroup
                         }
-			else
-			{
-				throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
-			}
-						break;
+                        else
+                        {
+                            throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
+                        }
+                        break;
 
-					case "android":
-						if (cfg.what == "e_sqlite3")
-						{
+                    case "android":
+                        if (cfg.what == "e_sqlite3")
+                        {
                             f.WriteStartElement("ItemGroup");
                             write_android_native_libs(root, f, "sqlite3");
                             f.WriteEndElement(); // ItemGroup
-						}
-						else if (cfg.what == "sqlcipher")
-						{
+                        }
+                        else if (cfg.what == "sqlcipher")
+                        {
                             f.WriteStartElement("ItemGroup");
                             write_android_native_libs_sqlcipher(root, f);
                             f.WriteEndElement(); // ItemGroup
                         }
-			else
-			{
-				throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
-			}
+                        else
+                        {
+                            // throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
+                            f.WriteStartElement("ItemGroup");
+                            write_android_native_libs_patterned(libRoot, f, cfg.what, "sqlite", libPattern);
+                            f.WriteEndElement(); // ItemGroup
+                        }
 
-						break;
-            }
+                        break;
+                }
             }
 
             f.WriteStartElement("ItemGroup");
@@ -4641,6 +4682,12 @@ public static class gen
             items_csproj.Add(config_csproj.create_provider(what, "android"));
             items_csproj.Add(config_csproj.create_provider(what, "uwp10"));
 
+            if (libRoot != null)
+            {
+                items_csproj.Add(config_csproj.create_embedded(what, "android"));
+                items_csproj.Add(config_csproj.create_embedded(what, "ios_unified"));
+            }
+
             foreach (config_csproj cfg in items_csproj)
             {
                 cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
@@ -4667,6 +4714,13 @@ public static class gen
 
             var customBuild = new CustomBuild(what, libRoot, libPattern);
 
+            projects.items_sqlite3.Clear();
+            projects.items_cppinterop.Clear();
+            projects.items_csproj = customBuild.items_csproj;
+            projects.items_test.Clear();
+            projects.items_esqlite3.Clear();
+            projects.items_testapp.Clear();
+
             // e.g., generates pinvoke_custom_sqlite3.cs
             Utils.WritePinvoke(root, top, customBuild.what);
             Utils.WritePinvoke(root, top, "ios_internal", "internal", "__Internal");
@@ -4674,7 +4728,7 @@ public static class gen
             // --------------------------------
             // generate all the AssemblyInfo files
 
-            foreach (config_csproj cfg in customBuild.items_csproj)
+            foreach (config_csproj cfg in projects.items_csproj)
             {
                 gen_assemblyinfo(cfg, root, top);
             }
@@ -4682,9 +4736,26 @@ public static class gen
             // --------------------------------
             // generate all the project files
 
-            foreach (config_csproj cfg in customBuild.items_csproj)
+            foreach (config_csproj cfg in projects.items_csproj)
             {
-                gen_csproj(cfg, root, top);
+                switch (cfg.area)
+                {
+                    case "lib":
+                        switch (cfg.env)
+                        {
+                            case "ios_unified":
+                                // need to pass list of libs and whichs :P
+                                gen_csproj(cfg, root, top, customBuild.libRoot, customBuild.libPattern);
+                                break;
+                            case "android":
+                                gen_csproj(cfg, root, top, customBuild.libRoot, customBuild.libPattern);
+                                break;
+                        }
+                        break;
+                    default:
+                        gen_csproj(cfg, root, top);
+                        break;
+                }
             }
         }
         else
