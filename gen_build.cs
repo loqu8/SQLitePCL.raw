@@ -1013,7 +1013,7 @@ public class config_csproj : config_info
                         break;
                     default:
                         //throw new Exception(what);
-                        cfg.csfiles_src.Add("imp_ios_internal.cs");
+                        cfg.csfiles_src.Add("imp_ios_internal.cs");     // but we have to make our own
                         break;
                 }
                 break;
@@ -4647,6 +4647,8 @@ public static class gen
     public static class Utils
     {
         private static string cs_pinvoke;
+        private static string cs_imp_ios_internal;
+        private static string cs_batteries_v2;
 
         public static void WritePinvoke(string root, string top, string what, string simpleDll = null, string actualDll = null)
         {
@@ -4658,6 +4660,31 @@ public static class gen
                 string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", simpleDll ?? what);
                 string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", actualDll ?? what);
                 tw.Write(cs2);
+            }
+        }
+
+        public static void WriteImpIosInternal(string root, string top, string what)
+        {
+            if (string.IsNullOrEmpty(cs_imp_ios_internal))
+                cs_imp_ios_internal = File.ReadAllText(Path.Combine(root, "src/cs/imp_ios_internal.cs"));
+
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, string.Format("imp_ios_internal_{0}.cs", what))))
+            {
+                string cs1 = cs_imp_ios_internal.Replace("IOS_PACKAGED_WHAT", string.Format("IOS_PACKAGED_{0}", what.ToUpper()));
+                string cs2 = cs1.Replace("WHAT", what);
+                tw.Write(cs2);
+            }
+        }
+
+        public static void WriteBatteriesV2(string root, string top, string what)
+        {
+            if (string.IsNullOrEmpty(cs_batteries_v2))
+                cs_batteries_v2 = File.ReadAllText(Path.Combine(root, "src/cs/batteries_v2.cs"));
+
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, string.Format("batteries_v2_{0}.cs", what))))
+            {
+                string cs1 = cs_batteries_v2.Replace("WHAT", what);
+                tw.Write(cs1);
             }
         }
     }
@@ -4748,6 +4775,8 @@ public static class gen
             // e.g., generates pinvoke_custom_sqlite3.cs
             Utils.WritePinvoke(root, top, customBuild.what);
             Utils.WritePinvoke(root, top, "ios_internal", "internal", "__Internal");
+            Utils.WriteImpIosInternal(root, top, customBuild.what);
+            Utils.WriteBatteriesV2(root, top, customBuild.what);
 
             // --------------------------------
             // generate all the AssemblyInfo files
