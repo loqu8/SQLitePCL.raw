@@ -993,7 +993,7 @@ public class config_csproj : config_info
                     default:
                         // throw new Exception(what);
                         // we might not use this
-                        cfg.defines.Add(string.Format("IOS_PACKAGED_{0}", cfg.what.ToUpper()));
+                        cfg.defines.Add(string.Format("IOS_PACKAGED_{0}", cfg.what));
                         break;
                 }
                 break;
@@ -1013,7 +1013,7 @@ public class config_csproj : config_info
                         break;
                     default:
                         //throw new Exception(what);
-                        cfg.csfiles_src.Add("imp_ios_internal.cs");     // but we have to make our own
+                        cfg.csfiles_bld.Add(string.Format("imp_ios_internal_{0}.cs", what));     // but we have to make our own
                         break;
                 }
                 break;
@@ -1186,7 +1186,22 @@ public class config_csproj : config_info
                 break;
             case 2:
                 cfg.assemblyname = string.Format("{0}.batteries_v2", cfg.root_name);
-                cfg.csfiles_src.Add("batteries_v2.cs");
+                switch (cfg.what)
+                {
+                    case "sqlite3":
+                    case "e_sqlite3":
+                    case "custom_sqlite3":
+                    case "winsqlite3":
+                    case "internal":
+                    case "sqlcipher":
+                    case "":            // none (for PCL)
+                    case null:          // none (for PCL)
+                        cfg.csfiles_src.Add("batteries_v2.cs");
+                        break;
+                    default:
+                        cfg.csfiles_bld.Add(string.Format("batteries_v2_{0}.cs", cfg.what));
+                        break;
+                }
                 break;
             default:
                 throw new NotImplementedException();
@@ -1200,6 +1215,7 @@ public class config_csproj : config_info
         cfg.area = area;
         cfg.nuget_override_target_env = nuget_override_target_env;
         cfg.name = string.Format("{0}.v{1}.{2}.{3}.{4}", cfg.root_name, ver, area, (what!=null)?what:"none", env);
+        cfg.what = what;        // TODO: will having this have bad effects
         set_batteries_version(cfg, ver);
         cfg.defines.Add("PROVIDER_" + ((what!=null)?what:"none"));
         cfg.ref_core = true;
@@ -4670,9 +4686,8 @@ public static class gen
 
             using (TextWriter tw = new StreamWriter(Path.Combine(top, string.Format("imp_ios_internal_{0}.cs", what))))
             {
-                string cs1 = cs_imp_ios_internal.Replace("IOS_PACKAGED_WHAT", string.Format("IOS_PACKAGED_{0}", what.ToUpper()));
-                string cs2 = cs1.Replace("WHAT", what);
-                tw.Write(cs2);
+                string cs1 = cs_imp_ios_internal.Replace("WHAT", what);
+                tw.Write(cs1);
             }
         }
 
