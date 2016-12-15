@@ -17,3 +17,4 @@ project.lock.json
 bin
 obj
 Tests_*
+bld_*

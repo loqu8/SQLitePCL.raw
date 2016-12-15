@@ -496,6 +496,7 @@ public static class projects
         // See https://docs.nuget.org/ndocs/schema/target-frameworks
         config_csproj cfg;
 
+        // prefer profile111 for a bit - issues with mac?
         switch (env)
         {
             case "net35":
@@ -1630,7 +1631,8 @@ public static class gen
 				write_reference(f, "Xamarin.WatchOS");
 				break;
 			case "macos":
-				write_reference(f, "Xamarin.Mac");
+                write_reference(f, "System.Runtime");
+                write_reference(f, "Xamarin.Mac");
 				break;
 			case "ios_classic":
 				write_reference(f, "monotouch");
@@ -3428,7 +3430,101 @@ public static class gen
 		}
 	}
 
-	private static void gen_nuspec_e_sqlite3(string top, string root, string plat)
+    private static void gen_nuspec(string top, string root, string plat, string what, string libRoot, string libPattern)
+    {
+        XmlWriterSettings settings = new XmlWriterSettings();
+        settings.Indent = true;
+        settings.OmitXmlDeclaration = false;
+
+        string id = string.Format("SQLitePCLRaw.lib.{1}.{0}", plat, what);
+        using (XmlWriter f = XmlWriter.Create(Path.Combine(top, string.Format("{0}.nuspec", id)), settings))
+        {
+            f.WriteStartDocument();
+            f.WriteComment("Automatically generated");
+
+            f.WriteStartElement("package", "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd");
+
+            f.WriteStartElement("metadata");
+            f.WriteAttributeString("minClientVersion", "2.8.1");
+
+            f.WriteElementString("id", id);
+            f.WriteElementString("version", NUSPEC_VERSION);
+            f.WriteElementString("title", string.Format("Native code only ({1}, {0}) for SQLitePCLRaw", plat, what));
+            f.WriteElementString("description", 
+                string.Format("This package contains a platform-specific native code build of {0} for use with SQLitePCL.raw.", what));
+            f.WriteElementString("authors", "SQLite, Zetetic");
+            f.WriteElementString("owners", "Eric Sink");
+            f.WriteElementString("copyright", "Copyright 2014-2016 Zumero, LLC");
+            f.WriteElementString("requireLicenseAcceptance", "false");
+            f.WriteElementString("licenseUrl", "https://raw.github.com/ericsink/SQLitePCL.raw/master/LICENSE.TXT");
+            f.WriteElementString("projectUrl", "https://github.com/ericsink/SQLitePCL.raw");
+            f.WriteElementString("releaseNotes", NUSPEC_RELEASE_NOTES);
+            f.WriteElementString("summary", "A Portable Class Library (PCL) for low-level (raw) access to SQLite");
+            f.WriteElementString("tags", "sqlite pcl database monotouch ios monodroid android wp8 wpa");
+
+            f.WriteEndElement(); // metadata
+
+            f.WriteStartElement("files");
+
+            string lib, libPath;
+            string tname = string.Format("{0}.targets", id);
+            switch (plat)
+            {
+                case "windows":
+                    lib = string.Format("{0}.dll", what);
+                    libPath = libPattern
+                        .Replace("$which", "sqlite")
+                        .Replace("$platform", "win")
+                        .Replace("$arch", "{0}")
+                        .Replace("$lib", lib);
+
+                    // TODO do we need amd64 version here?
+
+                    f.WriteStartElement("file");
+                    f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "x86")));
+                    f.WriteAttributeString("target", string.Format("runtimes\\win7-x86\\native\\{0}", lib));
+                    f.WriteEndElement(); // file
+
+                    f.WriteStartElement("file");
+                    f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "x64")));
+                    f.WriteAttributeString("target", string.Format("runtimes\\win7-x64\\native\\{0}", lib));
+                    f.WriteEndElement(); // file
+
+                    gen_nuget_targets_windows(top, tname, string.Format("{0}.dll", what));
+                    break;
+                case "osx":
+                    lib = string.Format("{0}.dylib", what);
+                    libPath = libPattern
+                        .Replace("$which", "sqlite")
+                        .Replace("$platform", "osx")
+                        .Replace("$arch", "{0}")
+                        .Replace("$lib", lib);
+
+
+                    f.WriteStartElement("file");
+                    f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "universal")));
+                    f.WriteAttributeString("target", string.Format("runtimes\\osx-x64\\native\\{0}", lib));
+                    f.WriteEndElement(); // file
+
+                    gen_nuget_targets_osx(top, tname, string.Format("lib{0}.dylib", what));
+                    break;
+                default:
+                    throw new Exception();
+            }
+            f.WriteStartElement("file");
+            f.WriteAttributeString("src", tname);
+            f.WriteAttributeString("target", string.Format("build\\{0}.targets", id));
+            f.WriteEndElement(); // file
+
+            f.WriteEndElement(); // files
+
+            f.WriteEndElement(); // package
+
+            f.WriteEndDocument();
+        }
+    }
+
+    private static void gen_nuspec_e_sqlite3(string top, string root, string plat)
 	{
 		XmlWriterSettings settings = new XmlWriterSettings();
 		settings.Indent = true;
@@ -4060,7 +4156,81 @@ public static class gen
 		}
 	}
 
-	private static void gen_nuspec_bundle_e_sqlite3(string top)
+    private static void gen_nuspec_bundle(string top, string what)
+    {
+        string id = string.Format("{0}.bundle_{1}", gen.ROOT_NAME, what);
+
+        XmlWriterSettings settings = new XmlWriterSettings();
+        settings.Indent = true;
+        settings.OmitXmlDeclaration = false;
+
+        using (XmlWriter f = XmlWriter.Create(Path.Combine(top, string.Format("{0}.nuspec", id)), settings))
+        {
+            f.WriteStartDocument();
+            f.WriteComment("Automatically generated");
+
+            f.WriteStartElement("package", "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd");
+
+            f.WriteStartElement("metadata");
+            f.WriteAttributeString("minClientVersion", "2.5"); // TODO 2.8.3 for unified
+
+            f.WriteElementString("id", id);
+            f.WriteElementString("version", NUSPEC_VERSION);
+            f.WriteElementString("title", id);
+            f.WriteElementString("description", "This 'batteries-included' bundle brings in SQLitePCLRaw.core and the necessary stuff for certain common use cases.  Call SQLitePCL.Batteries.Init().  Policy of this bundle: e_sqlite3 included");
+            f.WriteElementString("authors", "Eric Sink");
+            f.WriteElementString("owners", "Eric Sink");
+            f.WriteElementString("copyright", "Copyright 2014-2016 Zumero, LLC");
+            f.WriteElementString("requireLicenseAcceptance", "false");
+            f.WriteElementString("licenseUrl", "https://raw.github.com/ericsink/SQLitePCL.raw/master/LICENSE.TXT");
+            f.WriteElementString("projectUrl", "https://github.com/ericsink/SQLitePCL.raw");
+            f.WriteElementString("releaseNotes", NUSPEC_RELEASE_NOTES);
+            f.WriteElementString("summary", "Batteries-included package to bring in SQLitePCL.raw and dependencies");
+            f.WriteElementString("tags", "sqlite pcl database monotouch ios monodroid android wp8 wpa");
+
+            f.WriteStartElement("dependencies");
+
+            write_bundle_dependency_group(f, "android", what);
+            write_bundle_dependency_group(f, "ios_unified", what);
+            write_bundle_dependency_group(f, "macos", what);
+            // TODO write_bundle_dependency_group(f, "watchos", what);
+            write_bundle_dependency_group(f, "uwp10", what);
+            write_bundle_dependency_group(f, "net45", what);
+            write_bundle_dependency_group(f, "netcoreapp", "netstandard11", what);
+
+            write_dependency_group(f, "netstandard11", DEP_CORE);
+            write_dependency_group(f, null, DEP_CORE);
+
+            f.WriteEndElement(); // dependencies
+
+            f.WriteEndElement(); // metadata
+
+            f.WriteStartElement("files");
+
+            foreach (config_csproj cfg in projects.items_csproj)
+            {
+                if (cfg.area == string.Format("batteries_{0}", what) && cfg.env != "wp80")
+                {
+                    write_nuspec_file_entry(
+                            cfg,
+                            f
+                            );
+                }
+            }
+
+            //var a = projects.items_csproj.Where(cfg => (cfg.area == string.Format("batteries_{0}", what) && cfg.env == "wp80")).ToList();
+
+            //write_cppinterop_with_targets_file(f, a, "wp80", top, id);
+
+            f.WriteEndElement(); // files
+
+            f.WriteEndElement(); // package
+
+            f.WriteEndDocument();
+        }
+    }
+
+    private static void gen_nuspec_bundle_e_sqlite3(string top)
 	{
 		string id = string.Format("{0}.bundle_e_sqlite3", gen.ROOT_NAME);
 
@@ -4750,8 +4920,10 @@ public static class gen
 
                 // the following item builds for netstandard11 
                 // but overrides the nuget target env to place it in netcoreapp
+
                 items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "netstandard11", what, "netcoreapp"));
                 items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "netstandard11", null));
+//                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "profile111", null));
             }
 
             foreach (config_csproj cfg in items_csproj)
@@ -4829,6 +5001,20 @@ public static class gen
             // --------------------------------
 
             gen_solution(top);
+
+
+            gen_nuspec_core(top, root);
+            gen_nuspec_bundle(top, what);
+
+            gen_nuspec(top, root, "windows", customBuild.what, customBuild.libRoot, customBuild.libPattern);
+            gen_nuspec(top, root, "osx", customBuild.what, customBuild.libRoot, customBuild.libPattern);
+            foreach (config_csproj cfg in projects.items_csproj)
+            {
+                if (cfg.area == "lib")
+                {
+                    gen_nuspec_embedded(top, root, cfg);
+                }
+            }
 
             using (TextWriter tw = new StreamWriter(Path.Combine(top, "build.ps1")))
             {
