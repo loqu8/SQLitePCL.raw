@@ -991,7 +991,8 @@ public class config_csproj : config_info
                         cfg.defines.Add("IOS_PACKAGED_SQLCIPHER");
                         break;
                     default:
-                        //throw new Exception(what);
+                        // throw new Exception(what);
+                        // we might not use this
                         cfg.defines.Add(string.Format("IOS_PACKAGED_{0}", cfg.what.ToUpper()));
                         break;
                 }
@@ -2315,14 +2316,6 @@ public static class gen
         fix_version(project_dot_json);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="libRoot"></param>
-    /// <param name="f"></param>
-    /// <param name="what">e.g., custom_sqlite</param>
-    /// <param name="which">e.g., sqlite</param>
-    /// <param name="libPattern">e.g., "$which\\$platform\\$arch\\lib\\$lib"</param>
     private static void write_android_native_libs_patterned(string libRoot, XmlWriter f, string what, string which, string libPattern)
     {
         var archs = new List<string> {
@@ -2334,7 +2327,7 @@ public static class gen
         string libPath = libPattern
             .Replace("$which", which)
             .Replace("$platform", "android")
-            .Replace("$arch", "{{0}}")
+            .Replace("$arch", "{0}")
             .Replace("$lib", lib);
 
         foreach (var arch in archs)
@@ -2629,18 +2622,33 @@ public static class gen
                         else if (cfg.what == "sqlcipher")
                         {
                             f.WriteStartElement("ItemGroup");
-
                             // TODO warning says this is deprecated
                             f.WriteStartElement("ManifestResourceWithNoCulture");
                             f.WriteAttributeString("Include", Path.Combine(libRoot, "couchbase-lite-libsqlcipher\\libs\\ios\\libsqlcipher.a"));
                             f.WriteElementString("Link", "libsqlcipher.a");
                             f.WriteEndElement(); // ManifestResourceWithNoCulture
-
                             f.WriteEndElement(); // ItemGroup
                         }
                         else
                         {
-                            throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
+                            // throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
+
+                            // for now, if you have multiple libs, use libtool -static -o new.a old1.a old2.a ... to make a gigantic universal one
+                            string lib = string.Format("lib{0}.a", cfg.what);
+                            string libPath = libPattern
+                                .Replace("$which", "sqlite")
+                                .Replace("$platform", "ios")
+                                .Replace("$arch", "universal")
+                                .Replace("$lib", lib);
+
+                            f.WriteStartElement("ItemGroup");
+                            // TODO warning says this is deprecated
+                            f.WriteStartElement("ManifestResourceWithNoCulture");
+                            // TODO underscore
+                            f.WriteAttributeString("Include", Path.Combine(libRoot, libPath));
+                            f.WriteElementString("Link", lib);
+                            f.WriteEndElement(); // ManifestResourceWithNoCulture
+                            f.WriteEndElement(); // ItemGroup
                         }
                         break;
 
@@ -2731,7 +2739,6 @@ public static class gen
                             write_android_native_libs_patterned(libRoot, f, cfg.what, "sqlite", libPattern);
                             f.WriteEndElement(); // ItemGroup
                         }
-
                         break;
                 }
             }
@@ -4676,16 +4683,33 @@ public static class gen
             items_csproj = new List<config_csproj>();
             items_csproj.Add(config_csproj.create_core("netstandard11"));
 
+            items_csproj.Add(config_csproj.create_provider(what, "netstandard11"));
             items_csproj.Add(config_csproj.create_provider(what, "net45"));
-            items_csproj.Add(config_csproj.create_provider("internal", "ios_unified"));
             items_csproj.Add(config_csproj.create_provider(what, "macos"));
             items_csproj.Add(config_csproj.create_provider(what, "android"));
             items_csproj.Add(config_csproj.create_provider(what, "uwp10"));
+            items_csproj.Add(config_csproj.create_provider("internal", "ios_unified"));
 
             if (libRoot != null)
             {
                 items_csproj.Add(config_csproj.create_embedded(what, "android"));
                 items_csproj.Add(config_csproj.create_embedded(what, "ios_unified"));
+
+                // bundle_custom
+                var batteriesArea = string.Format("batteries_{0}", what);
+                var ver = 2;
+
+                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "android", what));
+                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "macos", what));
+                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "uwp10", what));
+                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "net45", what));
+                items_csproj.Add(config_csproj.create_internal_batteries(batteriesArea, ver, "ios_unified", what));
+                // TODO items_csproj.Add(config_csproj.create_internal_batteries(area, "watchos", what));
+
+                // the following item builds for netstandard11 
+                // but overrides the nuget target env to place it in netcoreapp
+                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "netstandard11", what, "netcoreapp"));
+                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "netstandard11", null));
             }
 
             foreach (config_csproj cfg in items_csproj)
@@ -4744,7 +4768,7 @@ public static class gen
                         switch (cfg.env)
                         {
                             case "ios_unified":
-                                // need to pass list of libs and whichs :P
+                                // need to pass list of libs and whichs :P or -gccflags?
                                 gen_csproj(cfg, root, top, customBuild.libRoot, customBuild.libPattern);
                                 break;
                             case "android":
@@ -4756,6 +4780,16 @@ public static class gen
                         gen_csproj(cfg, root, top);
                         break;
                 }
+            }
+
+            // --------------------------------
+
+            gen_solution(top);
+
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "build.ps1")))
+            {
+                tw.WriteLine("../../nuget restore sqlitepcl.sln");
+                tw.WriteLine("msbuild /p:Configuration=Release sqlitepcl.sln");
             }
         }
         else
