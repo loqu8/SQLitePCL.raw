@@ -5018,7 +5018,13 @@ public static class gen
 
             using (TextWriter tw = new StreamWriter(Path.Combine(top, "build.ps1")))
             {
-                tw.WriteLine("../../nuget restore sqlitepcl.sln");
+                tw.WriteLine("if (Get-Command \"../../nuget\" -ErrorAction SilentlyContinue) {");
+                tw.WriteLine("	$NUGET = \"../../nuget\"");
+                tw.WriteLine("} elseif (Get-Command \"nuget\") {");
+                tw.WriteLine("	$NUGET = \"nuget\"");
+                tw.WriteLine("}");
+
+                tw.WriteLine("Invoke-Expression \"$NUGET restore sqlitepcl.sln\"");
                 tw.WriteLine("msbuild /p:Configuration=Release sqlitepcl.sln");
             }
         }
