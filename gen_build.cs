@@ -85,7 +85,7 @@ public static class projects
     {
         // bundle_winsqlite3
         items_csproj.Add(config_csproj.create_batteries("batteries_winsqlite3", ver, "uwp10", "winsqlite3"));
-        
+
         // bundle_green
         items_csproj.Add(config_csproj.create_batteries("batteries_green",  ver,"ios_unified", "sqlite3"));
         items_csproj.Add(config_csproj.create_batteries("batteries_green",  ver,"macos", "sqlite3"));
@@ -101,7 +101,7 @@ public static class projects
         items_csproj.Add(config_csproj.create_wp80_batteries("batteries_green", ver, "arm"));
         items_csproj.Add(config_csproj.create_wp80_batteries("batteries_green", ver, "x86"));
 
-        // the following item builds for netstandard11 
+        // the following item builds for netstandard11
         // but overrides the nuget target env to place it in netcoreapp
         items_csproj.Add(config_csproj.create_batteries("batteries_green",  ver,"netstandard11", "e_sqlite3", "netcoreapp"));
 
@@ -125,7 +125,7 @@ public static class projects
         items_csproj.Add(config_csproj.create_wp80_batteries("batteries_e_sqlite3", ver, "arm"));
         items_csproj.Add(config_csproj.create_wp80_batteries("batteries_e_sqlite3", ver, "x86"));
 
-        // the following item builds for netstandard11 
+        // the following item builds for netstandard11
         // but overrides the nuget target env to place it in netcoreapp
         items_csproj.Add(config_csproj.create_batteries("batteries_e_sqlite3", ver, "netstandard11", "e_sqlite3", "netcoreapp"));
 
@@ -143,7 +143,7 @@ public static class projects
         items_csproj.Add(config_csproj.create_batteries("batteries_sqlcipher", ver, "net40", "sqlcipher"));
         items_csproj.Add(config_csproj.create_batteries("batteries_sqlcipher", ver, "net45", "sqlcipher"));
 
-        // the following item builds for netstandard11 
+        // the following item builds for netstandard11
         // but overrides the nuget target env to place it in netcoreapp
         items_csproj.Add(config_csproj.create_batteries("batteries_sqlcipher", ver, "netstandard11", "sqlcipher", "netcoreapp"));
 
@@ -268,7 +268,7 @@ public static class projects
 	{
         // using netstandard for the tests would require switching to the
         // xunit pre
-        
+
         //items_test.Add(config_csproj.create_portable_test("netstandard11"));
         items_test.Add(config_csproj.create_portable_test("profile259"));
 
@@ -285,46 +285,46 @@ public static class projects
 
     private static void init_testapps()
     {
-        items_testapp.Add(new config_testapp { 
-                env="android", 
-                cpu="anycpu", 
+        items_testapp.Add(new config_testapp {
+                env="android",
+                cpu="anycpu",
                 bundle="bundle_sqlcipher",
                 });
-        items_testapp.Add(new config_testapp { 
-                env="android", 
-                cpu="anycpu", 
+        items_testapp.Add(new config_testapp {
+                env="android",
+                cpu="anycpu",
                 bundle="bundle_e_sqlite3",
                 });
-        items_testapp.Add(new config_testapp { 
-                env="android", 
-                cpu="anycpu", 
+        items_testapp.Add(new config_testapp {
+                env="android",
+                cpu="anycpu",
                 bundle="bundle_green",
                 });
 
-        items_testapp.Add(new config_testapp { 
-                env="wp81", 
-                cpu="x86", 
+        items_testapp.Add(new config_testapp {
+                env="wp81",
+                cpu="x86",
                 bundle="bundle_e_sqlite3",
                 });
-        items_testapp.Add(new config_testapp { 
-                env="wp81", 
-                cpu="x86", 
+        items_testapp.Add(new config_testapp {
+                env="wp81",
+                cpu="x86",
                 bundle="bundle_green",
                 });
 
-        items_testapp.Add(new config_testapp { 
-                env="uwp10", 
-                cpu="x86", 
+        items_testapp.Add(new config_testapp {
+                env="uwp10",
+                cpu="x86",
                 bundle="bundle_green",
                 });
-        items_testapp.Add(new config_testapp { 
-                env="uwp10", 
-                cpu="x86", 
+        items_testapp.Add(new config_testapp {
+                env="uwp10",
+                cpu="x86",
                 bundle="bundle_e_sqlite3",
                 });
-        items_testapp.Add(new config_testapp { 
-                env="uwp10", 
-                cpu="x64", 
+        items_testapp.Add(new config_testapp {
+                env="uwp10",
+                cpu="x64",
                 bundle="bundle_winsqlite3",
                 });
     }
@@ -768,7 +768,7 @@ public class config_esqlite3 : config_info
 	{
 		throw new NotImplementedException();
 	}
-	
+
 }
 
 public static class config_cs
@@ -831,7 +831,7 @@ public static class config_cs
 				throw new Exception(env);
 		}
 	}
-					
+
 	public static string get_nuget_framework_name(string env)
 	{
 		switch (env)
@@ -878,7 +878,7 @@ public static class config_cs
 				throw new Exception(env);
 		}
 	}
-					
+
 }
 
 public class config_testapp
@@ -1273,7 +1273,7 @@ public class config_csproj : config_info
 	{
 		return string.Format("{0}.csproj", name);
 	}
-	
+
 	public string fixed_cpu()
 	{
 		if (cpu == "anycpu")
@@ -3091,7 +3091,7 @@ public static class gen
 		f.WriteEndElement(); // file
 	}
 
-	public static string NUSPEC_VERSION = string.Format("1.1.2-pre{0}", DateTime.Now.ToString("yyyyMMddHHmmss")); 
+	public static string NUSPEC_VERSION = string.Format("1.1.2-pre{0}", DateTime.Now.ToString("yyyyMMddHHmmss"));
 	//public static string NUSPEC_VERSION = "1.0.0-PLACEHOLDER";
 	//public static string NUSPEC_VERSION = "1.1.1";
 
@@ -3190,7 +3190,7 @@ public static class gen
                 if (cfg.area == "core")
                 {
                     write_nuspec_file_entry(
-                            cfg, 
+                            cfg,
                             f
                             );
                 }
@@ -3239,10 +3239,10 @@ public static class gen
 
 			f.WriteStartElement("files");
 
-			foreach (config_sqlite3 other in cfg.get_sqlite3_items()) 
+			foreach (config_sqlite3 other in cfg.get_sqlite3_items())
 			{
 				write_nuspec_file_entry(
-						other, 
+						other,
 						f
 						);
 			}
@@ -3307,7 +3307,7 @@ public static class gen
 			f.WriteStartElement("files");
 
             write_nuspec_file_entry(
-                    cfg, 
+                    cfg,
                     f
                     );
 
@@ -3418,7 +3418,7 @@ public static class gen
 			f.WriteStartElement("files");
 
 			write_nuspec_file_entry(
-					cfg, 
+					cfg,
 					f
 					);
 
@@ -3746,7 +3746,7 @@ public static class gen
 				if (cfg.area == "test")
 				{
 					write_nuspec_file_entry(
-							cfg, 
+							cfg,
 							f
 							);
 				}
@@ -3822,7 +3822,7 @@ public static class gen
 				if (cfg.area == "ugly")
 				{
 					write_nuspec_file_entry(
-							cfg, 
+							cfg,
 							f
 							);
 				}
@@ -3897,7 +3897,7 @@ public static class gen
 				if (cfg.area == "batteries_winsqlite3" && cfg.env != "wp80")
 				{
 					write_nuspec_file_entry(
-							cfg, 
+							cfg,
 							f
 							);
 				}
@@ -4124,7 +4124,7 @@ public static class gen
             write_bundle_dependency_group(f, "net40", "sqlcipher");
             write_bundle_dependency_group(f, "net45", "sqlcipher");
             write_bundle_dependency_group(f, "netcoreapp", "netstandard11", "sqlcipher");
-            
+
             write_dependency_group(f, "profile111", DEP_CORE);
             write_dependency_group(f, "profile136", DEP_CORE);
             write_dependency_group(f, "profile259", DEP_CORE);
@@ -4142,7 +4142,7 @@ public static class gen
 				if (cfg.area == "batteries_sqlcipher")
 				{
 					write_nuspec_file_entry(
-							cfg, 
+							cfg,
 							f
 							);
 				}
@@ -4277,7 +4277,7 @@ public static class gen
             write_bundle_dependency_group(f, "net40", "e_sqlite3");
             write_bundle_dependency_group(f, "net45", "e_sqlite3");
             write_bundle_dependency_group(f, "netcoreapp", "netstandard11", "e_sqlite3");
-            
+
             write_dependency_group(f, "profile111", DEP_CORE);
             write_dependency_group(f, "profile136", DEP_CORE);
             write_dependency_group(f, "profile259", DEP_CORE);
@@ -4295,7 +4295,7 @@ public static class gen
 				if (cfg.area == "batteries_e_sqlite3" && cfg.env != "wp80")
 				{
 					write_nuspec_file_entry(
-							cfg, 
+							cfg,
 							f
 							);
 				}
@@ -4304,7 +4304,7 @@ public static class gen
             var a = projects.items_csproj.Where(cfg => (cfg.area == "batteries_e_sqlite3" && cfg.env == "wp80")).ToList();
 
             write_cppinterop_with_targets_file(f, a, "wp80", top, id);
-            
+
 			f.WriteEndElement(); // files
 
 			f.WriteEndElement(); // package
@@ -4378,7 +4378,7 @@ public static class gen
 				if (cfg.area == "batteries_green" && cfg.env != "wp80")
 				{
 					write_nuspec_file_entry(
-							cfg, 
+							cfg,
 							f
 							);
 				}
@@ -4522,7 +4522,7 @@ public static class gen
 			f.WriteEndElement(); // Target
 
 			f.WriteStartElement("PropertyGroup");
-			f.WriteElementString("ResolveAssemblyReferencesDependsOn", 
+			f.WriteElementString("ResolveAssemblyReferencesDependsOn",
 					string.Format("$(ResolveAssemblyReferencesDependsOn);InjectReference_{0}", guid));
 			f.WriteEndElement(); // PropertyGroup
 
@@ -4572,7 +4572,7 @@ public static class gen
 			f.WriteEndElement(); // Target
 
 			f.WriteStartElement("PropertyGroup");
-			f.WriteElementString("ResolveAssemblyReferencesDependsOn", 
+			f.WriteElementString("ResolveAssemblyReferencesDependsOn",
 					string.Format("$(ResolveAssemblyReferencesDependsOn);InjectReference_{0}", guid));
 			f.WriteEndElement(); // PropertyGroup
 
@@ -4615,7 +4615,7 @@ public static class gen
 			f.WriteEndElement(); // Target
 
 			f.WriteStartElement("PropertyGroup");
-			f.WriteElementString("ResolveAssemblyReferencesDependsOn", 
+			f.WriteElementString("ResolveAssemblyReferencesDependsOn",
 					string.Format("$(ResolveAssemblyReferencesDependsOn);InjectReference_{0}", guid));
 			f.WriteEndElement(); // PropertyGroup
 
@@ -4660,7 +4660,7 @@ public static class gen
 			f.WriteEndElement(); // Target
 
 			f.WriteStartElement("PropertyGroup");
-			f.WriteElementString("ResolveAssemblyReferencesDependsOn", 
+			f.WriteElementString("ResolveAssemblyReferencesDependsOn",
 					string.Format("$(ResolveAssemblyReferencesDependsOn);InjectReference_{0}", guid));
 			f.WriteEndElement(); // PropertyGroup
 
@@ -4729,7 +4729,7 @@ public static class gen
 						f.WriteEndElement(); // Message
 						break;
 				}
-				
+
 				f.WriteComment(string.Format("{0}", cfg.get_name()));
 				f.WriteStartElement("ItemGroup");
                 f.WriteAttributeString("Condition", string.Format(" '$(Platform.ToLower())' == '{0}' ", cfg.cpu.ToLower()));
@@ -5282,5 +5282,297 @@ public static class gen
             }
         }
     }
-}
 
+	public static void Main(string[] args)
+	{
+		projects.init();
+
+		string root = Directory.GetCurrentDirectory(); // assumes that gen_build.exe is being run from the root directory of the project
+		string top = Path.Combine(root, "bld");
+
+		// --------------------------------
+		// create the bld directory
+		Directory.CreateDirectory(top);
+
+		string cs_pinvoke = File.ReadAllText(Path.Combine(root, "src/cs/sqlite3_pinvoke.cs"));
+		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_sqlite3.cs")))
+		{
+			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "sqlite3");
+			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "sqlite3");
+			tw.Write(cs2);
+		}
+		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_e_sqlite3.cs")))
+		{
+			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "e_sqlite3");
+			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "e_sqlite3");
+			tw.Write(cs2);
+		}
+		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_sqlcipher.cs")))
+		{
+			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "sqlcipher");
+			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "sqlcipher");
+			tw.Write(cs2);
+		}
+		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_custom_sqlite3.cs")))
+		{
+			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "custom_sqlite3");
+			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "custom_sqlite3");
+			tw.Write(cs2);
+		}
+		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_winsqlite3.cs")))
+		{
+			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "winsqlite3");
+			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "winsqlite3");
+			tw.Write(cs2);
+		}
+		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_sqlite3_xamarin.cs")))
+		{
+			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "sqlite3_xamarin");
+			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "sqlite3_xamarin");
+			tw.Write(cs2);
+		}
+		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_ios_internal.cs")))
+		{
+			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "internal");
+			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "__Internal");
+			tw.Write(cs2);
+		}
+
+		// --------------------------------
+		// assign all the guids
+
+		foreach (config_sqlite3 cfg in projects.items_sqlite3)
+		{
+			cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+		}
+
+		foreach (config_cppinterop cfg in projects.items_cppinterop)
+		{
+			cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+		}
+
+		foreach (config_csproj cfg in projects.items_csproj)
+		{
+			cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+		}
+
+		foreach (config_csproj cfg in projects.items_test)
+		{
+			cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+		}
+
+		foreach (config_testapp cfg in projects.items_testapp)
+		{
+			cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+		}
+
+		// --------------------------------
+		// generate all the AssemblyInfo files
+
+		foreach (config_csproj cfg in projects.items_csproj)
+		{
+			gen_assemblyinfo(cfg, root, top);
+		}
+
+		foreach (config_csproj cfg in projects.items_test)
+		{
+			gen_assemblyinfo(cfg, root, top);
+		}
+
+		// --------------------------------
+		// generate all the project files
+
+		foreach (config_sqlite3 cfg in projects.items_sqlite3)
+		{
+			gen_sqlite3(cfg, root, top);
+		}
+
+		foreach (config_cppinterop cfg in projects.items_cppinterop)
+		{
+			gen_cppinterop(cfg, root, top);
+		}
+
+		foreach (config_csproj cfg in projects.items_csproj)
+		{
+			gen_csproj(cfg, root, top);
+		}
+
+		foreach (config_csproj cfg in projects.items_test)
+		{
+			gen_csproj(cfg, root, top);
+		}
+
+		foreach (config_testapp cfg in projects.items_testapp)
+		{
+			gen_testapp(cfg, root);
+		}
+
+		// --------------------------------
+
+		gen_solution(top);
+		gen_testapp_solution(top, projects.items_testapp);
+		gen_test_solution(top);
+
+		// --------------------------------
+
+        gen_nuspec_core(top, root);
+        gen_nuspec_ugly(top);
+        gen_nuspec_bundle_green(top);
+        gen_nuspec_bundle_e_sqlite3(top);
+        gen_nuspec_bundle_winsqlite3(top);
+        gen_nuspec_bundle_sqlcipher(top);
+        gen_nuspec_provider_wp80(top, root, "e_sqlite3");
+        gen_nuspec_tests(top);
+
+		foreach (config_csproj cfg in projects.items_csproj)
+		{
+            if (cfg.area == "provider" && cfg.env != "wp80")
+            {
+                gen_nuspec_provider(top, root, cfg);
+            }
+		}
+
+		foreach (config_csproj cfg in projects.items_csproj)
+		{
+            if (cfg.area == "lib")
+            {
+                gen_nuspec_embedded(top, root, cfg);
+            }
+		}
+
+		foreach (config_esqlite3 cfg in projects.items_esqlite3)
+		{
+			gen_nuspec_esqlite3(top, root, cfg);
+		}
+
+		gen_nuspec_e_sqlite3(top, root, "osx");
+		gen_nuspec_e_sqlite3(top, root, "linux");
+
+		gen_nuspec_sqlcipher(top, root, "windows");
+		gen_nuspec_sqlcipher(top, root, "osx");
+		gen_nuspec_sqlcipher(top, root, "linux");
+
+		using (TextWriter tw = new StreamWriter(Path.Combine(top, "build.ps1")))
+		{
+			tw.WriteLine("if (Get-Command \"../../nuget\" -ErrorAction SilentlyContinue) {");
+			tw.WriteLine("	$NUGET = \"../../nuget\"");
+			tw.WriteLine("} elseif (Get-Command \"nuget\") {");
+			tw.WriteLine("	$NUGET = \"nuget\"");
+			tw.WriteLine("}");
+
+			tw.WriteLine("Invoke-Expression \"$NUGET restore sqlitepcl.sln\"");
+			tw.WriteLine("msbuild /p:Configuration=Release sqlitepcl.sln");
+		}
+
+		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pack.ps1")))
+		{
+			tw.WriteLine("if (Get-Command \"../../nuget\" -ErrorAction SilentlyContinue) {");
+			tw.WriteLine("	$NUGET = \"../../nuget\"");
+			tw.WriteLine("} elseif (Get-Command \"nuget\") {");
+			tw.WriteLine("	$NUGET = \"nuget\"");
+			tw.WriteLine("}");
+
+			tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.core.nuspec\"", gen.ROOT_NAME);
+			tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.ugly.nuspec\"", gen.ROOT_NAME);
+			tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_green.nuspec\"", gen.ROOT_NAME);
+			tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_e_sqlite3.nuspec\"", gen.ROOT_NAME);
+			tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_sqlcipher.nuspec\"", gen.ROOT_NAME);
+			tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_winsqlite3.nuspec\"", gen.ROOT_NAME);
+			tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.provider.e_sqlite3.wp80.nuspec\"", gen.ROOT_NAME);
+			tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.tests.nuspec\"", gen.ROOT_NAME);
+
+			tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.e_sqlite3.osx.nuspec\"", gen.ROOT_NAME);
+			tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.e_sqlite3.linux.nuspec\"", gen.ROOT_NAME);
+
+			tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.sqlcipher.windows.nuspec\"", gen.ROOT_NAME);
+			tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.sqlcipher.osx.nuspec\"", gen.ROOT_NAME);
+			tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.sqlcipher.linux.nuspec\"", gen.ROOT_NAME);
+
+			foreach (config_csproj cfg in projects.items_csproj)
+			{
+                if (cfg.area == "provider" && cfg.env != "wp80")
+                {
+                    string id = cfg.get_id();
+                    tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec\"", id);
+                }
+			}
+			foreach (config_csproj cfg in projects.items_csproj)
+			{
+                if (cfg.area == "lib")
+                {
+                    string id = cfg.get_id();
+                    tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec\"", id);
+                }
+			}
+			foreach (config_esqlite3 cfg in projects.items_esqlite3)
+			{
+				string id = cfg.get_id();
+				tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec\"", id);
+			}
+			tw.WriteLine("ls *.nupkg");
+		}
+
+		using (TextWriter tw = new StreamWriter(Path.Combine(top, "bt.ps1")))
+		{
+			tw.WriteLine("if (Get-Command \"../../nuget\" -ErrorAction SilentlyContinue) {");
+			tw.WriteLine("	$NUGET = \"../../nuget\"");
+			tw.WriteLine("} elseif (Get-Command \"nuget\") {");
+			tw.WriteLine("	$NUGET = \"nuget\"");
+			tw.WriteLine("}");
+
+      string vtests = string.Format("Tests_{0}", NUSPEC_VERSION);
+			tw.WriteLine("cd ../{0}", vtests);
+			tw.WriteLine("Invoke-Expression \"$NUGET restore -Source '{0}' -Source https://www.nuget.org/api/v2 ./testapps.sln\"", top);
+		}
+
+		using (TextWriter tw = new StreamWriter(Path.Combine(top, "push.ps1")))
+		{
+			const string src = "https://www.nuget.org/api/v2/package";
+
+			tw.WriteLine("if (Get-Command \"../../nuget\" -ErrorAction SilentlyContinue) {");
+			tw.WriteLine("	$NUGET = \"../../nuget\"");
+			tw.WriteLine("} elseif (Get-Command \"nuget\") {");
+			tw.WriteLine("	$NUGET = \"nuget\"");
+			tw.WriteLine("}");
+
+			tw.WriteLine("ls *.nupkg");
+			tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.core.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+			tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.ugly.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+			tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.bundle_green.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+			tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.bundle_e_sqlite3.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+			tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.bundle_sqlcipher.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+			tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.bundle_winsqlite3.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+			tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.provider.e_sqlite3.wp80.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+			tw.WriteLine("#Invoke-Expression \"$NUGET push -Source {2} {0}.tests.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+
+			tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.lib.e_sqlite3.osx.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+			tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.lib.e_sqlite3.linux.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+
+			tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.lib.sqlcipher.windows.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+			tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.lib.sqlcipher.osx.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+			tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.lib.sqlcipher.linux.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+
+			foreach (config_csproj cfg in projects.items_csproj)
+			{
+                if (cfg.area == "provider" && cfg.env != "wp80")
+                {
+                    string id = cfg.get_id();
+                    tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.{1}.nupkg\"", id, NUSPEC_VERSION, src);
+                }
+			}
+			foreach (config_csproj cfg in projects.items_csproj)
+			{
+                if (cfg.area == "lib")
+                {
+                    string id = cfg.get_id();
+                    tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.{1}.nupkg\"", id, NUSPEC_VERSION, src);
+                }
+			}
+			foreach (config_esqlite3 cfg in projects.items_esqlite3)
+			{
+				string id = cfg.get_id();
+				tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.{1}.nupkg\"", id, NUSPEC_VERSION, src);
+			}
+		}
+	}
+}
