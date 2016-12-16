@@ -4004,58 +4004,7 @@ public static class gen
             f.WriteEndElement(); // dependency
         }
 
-        if (what == "e_sqlite3")
-        {
-            switch (env_deps)
-            {
-                case "android":
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.android", gen.ROOT_NAME));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-                    break;
-                case "macos":
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.osx", gen.ROOT_NAME));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-                    break;
-                case "ios_unified":
-                case "ios_classic":
-                case "watchos":
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.{1}.static", gen.ROOT_NAME, env_deps));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-                    break;
-                case "net35":
-                case "net40":
-                case "net45":
-                case "netstandard11": // TODO because this is used for netcoreapp, kinda hackish
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.v110_xp", gen.ROOT_NAME));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.osx", gen.ROOT_NAME));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.linux", gen.ROOT_NAME));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-                    break;
-                default:
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.{1}", gen.ROOT_NAME, projects.cs_env_to_toolset(env_deps)));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-                    break;
-            }
-        }
-        else if (what == "sqlcipher")
+        if (what == "sqlcipher")
         {
             switch (env_deps)
             {
@@ -4101,6 +4050,57 @@ public static class gen
                 default:
                     f.WriteStartElement("dependency");
                     f.WriteAttributeString("id", string.Format("{0}.lib.sqlcipher.{1}", gen.ROOT_NAME, projects.cs_env_to_toolset(env_deps)));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+                    break;
+            }
+        }
+        else
+        {
+            switch (env_deps)
+            {
+                case "android":
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.android", gen.ROOT_NAME, what));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+                    break;
+                case "macos":
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.osx", gen.ROOT_NAME, what));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+                    break;
+                case "ios_unified":
+                case "ios_classic":
+                case "watchos":
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{2}.{1}.static", gen.ROOT_NAME, env_deps, what));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+                    break;
+                case "net35":
+                case "net40":
+                case "net45":
+                case "netstandard11": // TODO because this is used for netcoreapp, kinda hackish
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.v110_xp", gen.ROOT_NAME, what));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.osx", gen.ROOT_NAME, what));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.linux", gen.ROOT_NAME, what));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+                    break;
+                default:
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{2}.{1}", gen.ROOT_NAME, projects.cs_env_to_toolset(env_deps), what));
                     f.WriteAttributeString("version", NUSPEC_VERSION);
                     f.WriteEndElement(); // dependency
                     break;
