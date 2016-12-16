@@ -5111,6 +5111,39 @@ public static class gen
                 tw.WriteLine("Invoke-Expression \"$NUGET restore sqlitepcl.sln\"");
                 tw.WriteLine("msbuild /p:Configuration=Release sqlitepcl.sln");
             }
+
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "pack.ps1")))
+            {
+                tw.WriteLine("if (Get-Command \"../../nuget\" -ErrorAction SilentlyContinue) {");
+                tw.WriteLine("	$NUGET = \"../../nuget\"");
+                tw.WriteLine("} elseif (Get-Command \"nuget\") {");
+                tw.WriteLine("	$NUGET = \"nuget\"");
+                tw.WriteLine("}");
+
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.core.nuspec\"", gen.ROOT_NAME);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_{1}.nuspec\"", gen.ROOT_NAME, customBuild.what);
+
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.windows.nuspec\"", gen.ROOT_NAME, customBuild.what);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.osx.nuspec\"", gen.ROOT_NAME, customBuild.what);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.linux.nuspec\"", gen.ROOT_NAME, customBuild.what);
+
+                foreach (config_csproj cfg in projects.items_csproj)
+                {
+                    if (cfg.area == "provider" && cfg.env != "wp80")
+                    {
+                        string id = cfg.get_id();
+                        tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec\"", id);
+                    }
+                }
+                foreach (config_csproj cfg in projects.items_csproj)
+                {
+                    if (cfg.area == "lib")
+                    {
+                        string id = cfg.get_id();
+                        tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec\"", id);
+                    }
+                }
+            }
         }
         else
         {
