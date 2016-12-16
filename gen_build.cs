@@ -3521,7 +3521,7 @@ public static class gen
                     gen_nuget_targets_windows(top, tname, string.Format("{0}.dll", what));
                     break;
                 case "osx":
-                    lib = string.Format("{0}.dylib", what);
+                    lib = string.Format("lib{0}.dylib", what);
                     libPath = libPattern
                         .Replace("$which", "sqlite")
                         .Replace("$platform", "osx")
@@ -5092,6 +5092,15 @@ public static class gen
             gen_nuspec(top, root, "windows", customBuild.what, customBuild.libRoot, customBuild.libPattern);
             gen_nuspec(top, root, "uwp", customBuild.what, customBuild.libRoot, customBuild.libPattern);
             gen_nuspec(top, root, "osx", customBuild.what, customBuild.libRoot, customBuild.libPattern);
+
+            foreach (config_csproj cfg in projects.items_csproj)
+            {
+                if (cfg.area == "provider" && cfg.env != "wp80")
+                {
+                    gen_nuspec_provider(top, root, cfg);
+                }
+            }
+
             foreach (config_csproj cfg in projects.items_csproj)
             {
                 if (cfg.area == "lib")
