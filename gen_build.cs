@@ -5130,7 +5130,6 @@ public static class gen
                 tw.WriteLine("}");
 
                 tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.core.nuspec\"", gen.ROOT_NAME);
-                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_{1}.nuspec\"", gen.ROOT_NAME, customBuild.what);
 
                 tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.windows.nuspec\"", gen.ROOT_NAME, customBuild.what);
                 tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.osx.nuspec\"", gen.ROOT_NAME, customBuild.what);
@@ -5152,6 +5151,9 @@ public static class gen
                         tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec\"", id);
                     }
                 }
+
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_{1}.nuspec\"", gen.ROOT_NAME, customBuild.what);
+
             }
         }
         else
