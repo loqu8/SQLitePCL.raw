@@ -3470,6 +3470,29 @@ public static class gen
             string tname = string.Format("{0}.targets", id);
             switch (plat)
             {
+                case "uwp":
+                    lib = string.Format("{0}.dll", what);
+                    libPath = libPattern
+                        .Replace("$which", "sqlite")
+                        .Replace("$platform", "uwp")
+                        .Replace("$arch", "{0}")
+                        .Replace("$lib", lib);
+
+                    // TODO do we need amd64 version here?
+
+                    f.WriteStartElement("file");
+                    f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "x86")));
+                    f.WriteAttributeString("target", string.Format("runtimes\\win7-x86\\native\\{0}", lib));
+                    f.WriteEndElement(); // file
+
+                    f.WriteStartElement("file");
+                    f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "x64")));
+                    f.WriteAttributeString("target", string.Format("runtimes\\win7-x64\\native\\{0}", lib));
+                    f.WriteEndElement(); // file
+
+                    gen_nuget_targets_windows(top, tname, string.Format("{0}.dll", what));
+                    break;
+
                 case "windows":
                     lib = string.Format("{0}.dll", what);
                     libPath = libPattern
@@ -4948,7 +4971,7 @@ public static class gen
         {
             string what = args[0];
             string libRoot = args.Length > 1 ? args[1] : null;      // skip bundling if libRoot is not provided
-            string libPattern = args.Length > 2 ? args[2] : string.Format("$which\\$platform\\$arch\\lib\\$lib");
+            string libPattern = args.Length > 2 ? args[2] : "$which\\lib\\$platform\\$arch\\$lib"; //string.Format("$which\\$platform\\$arch\\lib\\$lib");
 
             var customBuild = new CustomBuild(what, libRoot, libPattern);
 
@@ -5007,6 +5030,7 @@ public static class gen
             gen_nuspec_bundle(top, what);
 
             gen_nuspec(top, root, "windows", customBuild.what, customBuild.libRoot, customBuild.libPattern);
+            gen_nuspec(top, root, "uwp", customBuild.what, customBuild.libRoot, customBuild.libPattern);
             gen_nuspec(top, root, "osx", customBuild.what, customBuild.libRoot, customBuild.libPattern);
             foreach (config_csproj cfg in projects.items_csproj)
             {
