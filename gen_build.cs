@@ -3482,15 +3482,20 @@ public static class gen
 
                     f.WriteStartElement("file");
                     f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "x86")));
-                    f.WriteAttributeString("target", string.Format("runtimes\\win7-x86\\native\\{0}", lib));
+                    f.WriteAttributeString("target", string.Format("runtimes\\win10-x86\\native\\{0}", lib));
                     f.WriteEndElement(); // file
 
                     f.WriteStartElement("file");
                     f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "x64")));
-                    f.WriteAttributeString("target", string.Format("runtimes\\win7-x64\\native\\{0}", lib));
+                    f.WriteAttributeString("target", string.Format("runtimes\\win10-x64\\native\\{0}", lib));
                     f.WriteEndElement(); // file
 
-                    gen_nuget_targets_windows(top, tname, string.Format("{0}.dll", what));
+                    f.WriteStartElement("file");
+                    f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "arm")));
+                    f.WriteAttributeString("target", string.Format("runtimes\\win10-arm\\native\\{0}", lib));
+                    f.WriteEndElement(); // file
+
+                    gen_nuget_targets_windows_uwp(top, tname, string.Format("{0}.dll", what));
                     break;
 
                 case "windows":
@@ -4556,7 +4561,62 @@ public static class gen
 		return tname;
 	}
 
-	private static void gen_nuget_targets_windows(string top, string tname, string filename)
+    private static void gen_nuget_targets_windows_uwp(string top, string tname, string filename)
+    {
+        XmlWriterSettings settings = new XmlWriterSettings();
+        settings.Indent = true;
+        settings.OmitXmlDeclaration = false;
+
+        using (XmlWriter f = XmlWriter.Create(Path.Combine(top, tname), settings))
+        {
+            f.WriteStartDocument();
+            f.WriteComment("Automatically generated");
+
+            f.WriteStartElement("Project", "http://schemas.microsoft.com/developer/msbuild/2003");
+            f.WriteAttributeString("ToolsVersion", "4.0");
+
+            var guid = Guid.NewGuid().ToString();
+            f.WriteStartElement("Target");
+            f.WriteAttributeString("Name", string.Format("InjectReference_{0}", guid));
+            f.WriteAttributeString("BeforeTargets", "ResolveAssemblyReferences");
+
+            f.WriteStartElement("ItemGroup");
+            f.WriteAttributeString("Condition", " '$(OS)' == 'Windows_NT' ");
+
+            f.WriteStartElement("Content");
+            f.WriteAttributeString("Include", string.Format("$(MSBuildThisFileDirectory)..\\runtimes\\win10-x86\\native\\{0}", filename));
+            f.WriteElementString("Link", string.Format("{0}\\{1}", "x86", filename));
+            f.WriteElementString("CopyToOutputDirectory", "PreserveNewest");
+            f.WriteEndElement(); // Content
+
+            f.WriteStartElement("Content");
+            f.WriteAttributeString("Include", string.Format("$(MSBuildThisFileDirectory)..\\runtimes\\win10-x64\\native\\{0}", filename));
+            f.WriteElementString("Link", string.Format("{0}\\{1}", "x64", filename));
+            f.WriteElementString("CopyToOutputDirectory", "PreserveNewest");
+            f.WriteEndElement(); // Content
+
+            f.WriteStartElement("Content");
+            f.WriteAttributeString("Include", string.Format("$(MSBuildThisFileDirectory)..\\runtimes\\win10-arm\\native\\{0}", filename));
+            f.WriteElementString("Link", string.Format("{0}\\{1}", "arm", filename));
+            f.WriteElementString("CopyToOutputDirectory", "PreserveNewest");
+            f.WriteEndElement(); // Content
+
+            f.WriteEndElement(); // ItemGroup
+
+            f.WriteEndElement(); // Target
+
+            f.WriteStartElement("PropertyGroup");
+            f.WriteElementString("ResolveAssemblyReferencesDependsOn",
+                    string.Format("$(ResolveAssemblyReferencesDependsOn);InjectReference_{0}", guid));
+            f.WriteEndElement(); // PropertyGroup
+
+            f.WriteEndElement(); // Project
+
+            f.WriteEndDocument();
+        }
+    }
+
+    private static void gen_nuget_targets_windows(string top, string tname, string filename)
 	{
 		XmlWriterSettings settings = new XmlWriterSettings();
 		settings.Indent = true;
