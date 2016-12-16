@@ -5134,7 +5134,7 @@ public static class gen
 
                 tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.windows.nuspec\"", gen.ROOT_NAME, customBuild.what);
                 tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.osx.nuspec\"", gen.ROOT_NAME, customBuild.what);
-                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.linux.nuspec\"", gen.ROOT_NAME, customBuild.what);
+//                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.linux.nuspec\"", gen.ROOT_NAME, customBuild.what);
 
                 foreach (config_csproj cfg in projects.items_csproj)
                 {
