@@ -5129,10 +5129,12 @@ public static class gen
                 tw.WriteLine("	$NUGET = \"nuget\"");
                 tw.WriteLine("}");
 
-                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.core.nuspec\"", gen.ROOT_NAME);
+                string pack_flags = "-verbose";
 
-                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.windows.nuspec\"", gen.ROOT_NAME, customBuild.what);
-                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.osx.nuspec\"", gen.ROOT_NAME, customBuild.what);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.core.nuspec {1}\"", gen.ROOT_NAME, pack_flags);
+
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.windows.nuspec {2}\"", gen.ROOT_NAME, customBuild.what, pack_flags);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.osx.nuspec {2}\"", gen.ROOT_NAME, customBuild.what, pack_flags);
 //                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.linux.nuspec\"", gen.ROOT_NAME, customBuild.what);
 
                 foreach (config_csproj cfg in projects.items_csproj)
@@ -5140,7 +5142,7 @@ public static class gen
                     if (cfg.area == "provider" && cfg.env != "wp80")
                     {
                         string id = cfg.get_id();
-                        tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec\"", id);
+                        tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec {1}\"", id, pack_flags);
                     }
                 }
                 foreach (config_csproj cfg in projects.items_csproj)
@@ -5148,11 +5150,11 @@ public static class gen
                     if (cfg.area == "lib")
                     {
                         string id = cfg.get_id();
-                        tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec\"", id);
+                        tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec {1}\"", id, pack_flags);
                     }
                 }
 
-                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_{1}.nuspec\"", gen.ROOT_NAME, customBuild.what);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_{1}.nuspec {2}\"", gen.ROOT_NAME, customBuild.what, pack_flags);
 
             }
         }
