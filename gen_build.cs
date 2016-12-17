@@ -395,7 +395,7 @@ public static class projects
 		case "wpa81":
 			return "v120_wp81";
 		case "uwp10":
-			return "v140";
+			return "uwp";
 		case "win8":
 			return "v110";
 		case "win81":
@@ -4084,7 +4084,7 @@ public static class gen
                 case "net45":
                 case "netstandard11": // TODO because this is used for netcoreapp, kinda hackish
                     f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.v110_xp", gen.ROOT_NAME, what));
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.windows", gen.ROOT_NAME, what));
                     f.WriteAttributeString("version", NUSPEC_VERSION);
                     f.WriteEndElement(); // dependency
 
