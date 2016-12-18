@@ -25,7 +25,8 @@ public static class projects
 	// Each item in these Lists corresponds to a project file that will be
 	// generated.
 	//
-	public static List<config_sqlite3> items_sqlite3 = new List<config_sqlite3>();
+	public static List<config_sqlite3> items_sqlite3 = new List<config_sqlite3>(); 
+
 	public static List<config_cppinterop> items_cppinterop = new List<config_cppinterop>();
 	public static List<config_csproj> items_csproj = new List<config_csproj>();
 
@@ -36,9 +37,12 @@ public static class projects
 
 	// This function is called by Main to initialize the project lists.
 	//
-	public static void init()
+	public static void init(string what)
 	{
-		init_sqlite3();
+        if (what == "xsqlite3")
+            init_sqlite3<config_xsqlite3>();
+        else
+            init_sqlite3<config_sqlite3>();
 
 		init_cppinterop();
 
@@ -51,28 +55,32 @@ public static class projects
 		init_esqlite3();
 	}
 
-	private static void init_sqlite3()
-	{
-		items_sqlite3.Add(new config_sqlite3 { toolset="v110_xp", cpu="x86" });
-		items_sqlite3.Add(new config_sqlite3 { toolset="v110_xp", cpu="x64" });
+    private static void init_sqlite3<T>() where T : config_sqlite3, new() // <- Dem high level abstractions
+    {
+		items_sqlite3.Add(new T { toolset="v110", cpu="arm" });
+		items_sqlite3.Add(new T { toolset="v110", cpu="x64" });
+		items_sqlite3.Add(new T { toolset="v110", cpu="x86" });
 
-		items_sqlite3.Add(new config_sqlite3 { toolset="v110", cpu="arm" });
-		items_sqlite3.Add(new config_sqlite3 { toolset="v110", cpu="x64" });
-		items_sqlite3.Add(new config_sqlite3 { toolset="v110", cpu="x86" });
+		items_sqlite3.Add(new T { toolset="v120", cpu="arm" });
+		items_sqlite3.Add(new T { toolset="v120", cpu="x64" });
+		items_sqlite3.Add(new T { toolset="v120", cpu="x86" });
 
-		items_sqlite3.Add(new config_sqlite3 { toolset="v120", cpu="arm" });
-		items_sqlite3.Add(new config_sqlite3 { toolset="v120", cpu="x64" });
-		items_sqlite3.Add(new config_sqlite3 { toolset="v120", cpu="x86" });
+		items_sqlite3.Add(new T { toolset="v140", cpu="arm" });
+		items_sqlite3.Add(new T { toolset="v140", cpu="x64" });
+		items_sqlite3.Add(new T { toolset="v140", cpu="x86" });
 
-		items_sqlite3.Add(new config_sqlite3 { toolset="v140", cpu="arm" });
-		items_sqlite3.Add(new config_sqlite3 { toolset="v140", cpu="x64" });
-		items_sqlite3.Add(new config_sqlite3 { toolset="v140", cpu="x86" });
+        // Xsqlite3 doesn't support windows 8 or xp.  
+        if (typeof(T) == typeof(config_sqlite3))
+        {
+            items_sqlite3.Add(new T { toolset = "v110_xp", cpu = "x86" });
+            items_sqlite3.Add(new T { toolset = "v110_xp", cpu = "x64" });
 
-		items_sqlite3.Add(new config_sqlite3 { toolset="v110_wp80", cpu="arm" });
-		items_sqlite3.Add(new config_sqlite3 { toolset="v110_wp80", cpu="x86" });
+            items_sqlite3.Add(new T { toolset = "v110_wp80", cpu = "arm" });
+            items_sqlite3.Add(new T { toolset = "v110_wp80", cpu = "x86" });
 
-		items_sqlite3.Add(new config_sqlite3 { toolset="v120_wp81", cpu="arm" });
-		items_sqlite3.Add(new config_sqlite3 { toolset="v120_wp81", cpu="x86" });
+            items_sqlite3.Add(new T { toolset = "v120_wp81", cpu = "arm" });
+            items_sqlite3.Add(new T { toolset = "v120_wp81", cpu = "x86" });
+        }
 	}
 
 	private static void init_cppinterop()
@@ -606,17 +614,17 @@ public class config_sqlite3 : config_info
 	public string cpu;
 	public string guid;
 
-	private void add_product(List<string> a, string s)
+	protected void add_product(List<string> a, string s)
 	{
 		a.Add(Path.Combine(get_name(), "bin", "release", s));
 	}
 
-	public void get_products(List<string> a)
+	public virtual void get_products(List<string> a)
 	{
 		add_product(a, "e_sqlite3.dll");
 	}
 
-	private string area()
+	protected virtual string area()
 	{
 		return "sqlite3";
 	}
@@ -652,6 +660,19 @@ public class config_sqlite3 : config_info
 			return cpu;
 		}
 	}
+}
+
+public class config_xsqlite3 : config_sqlite3
+{
+    public override void get_products(List<string> a)
+    {
+        add_product(a, "xsqlite3.dll");
+    }
+
+    protected override string area()
+    {
+        return "xsqlite3";
+    }
 }
 
 public class config_cppinterop : config_info
@@ -2059,7 +2080,7 @@ public static class gen
 		}
 	}
 
-	private static void gen_cppinterop(config_cppinterop cfg, string root, string top)
+    private static void gen_cppinterop(config_cppinterop cfg, string root, string top)
 	{
 		XmlWriterSettings settings = new XmlWriterSettings();
 		settings.Indent = true;
@@ -4042,10 +4063,13 @@ public static class gen
                     f.WriteAttributeString("version", NUSPEC_VERSION);
                     f.WriteEndElement(); // dependency
 
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.sqlcipher.linux", gen.ROOT_NAME));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
+                    if (what != "xsqlite3")
+                    {
+                        f.WriteStartElement("dependency");
+                        f.WriteAttributeString("id", string.Format("{0}.lib.sqlcipher.linux", gen.ROOT_NAME));
+                        f.WriteAttributeString("version", NUSPEC_VERSION);
+                        f.WriteEndElement(); // dependency
+                    }
                     break;
                 default:
                     f.WriteStartElement("dependency");
@@ -4093,10 +4117,14 @@ public static class gen
                     f.WriteAttributeString("version", NUSPEC_VERSION);
                     f.WriteEndElement(); // dependency
 
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.linux", gen.ROOT_NAME, what));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
+                    if (what != "xsqlite3")
+                    {
+                        f.WriteStartElement("dependency");
+                        f.WriteAttributeString("id", string.Format("{0}.lib.{1}.linux", gen.ROOT_NAME, what));
+                        f.WriteAttributeString("version", NUSPEC_VERSION);
+                        f.WriteEndElement(); // dependency
+                    }
+
                     break;
                 default:
                     f.WriteStartElement("dependency");
@@ -5018,8 +5046,6 @@ public static class gen
 
     public static void Main(string[] args)
     {
-        projects.init();
-
         string root = Directory.GetCurrentDirectory(); // assumes that gen_build.exe is being run from the root directory of the project
         string top = Path.Combine(root, "bld");
 
@@ -5033,9 +5059,10 @@ public static class gen
             string libRoot = args.Length > 1 ? args[1] : null;      // skip bundling if libRoot is not provided
             string libPattern = args.Length > 2 ? args[2] : "$which\\lib\\$platform\\$arch\\$lib"; //string.Format("$which\\$platform\\$arch\\lib\\$lib");
 
+            projects.init(what);
+
             var customBuild = new CustomBuild(what, libRoot, libPattern);
 
-            projects.items_sqlite3.Clear();
             projects.items_cppinterop.Clear();
             projects.items_csproj = customBuild.items_csproj;
             projects.items_test.Clear();
@@ -5057,7 +5084,20 @@ public static class gen
             }
 
             // --------------------------------
+            // assign all the guids
+
+            foreach (config_sqlite3 cfg in projects.items_sqlite3)
+            {
+                cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+            }
+
+            // --------------------------------
             // generate all the project files
+
+            foreach (config_sqlite3 cfg in projects.items_sqlite3)
+            {
+                gen_sqlite3(cfg, root, top);
+            }
 
             foreach (config_csproj cfg in projects.items_csproj)
             {
@@ -5084,7 +5124,6 @@ public static class gen
             // --------------------------------
 
             gen_solution(top);
-
 
             gen_nuspec_core(top, root);
             gen_nuspec_bundle(top, what);
@@ -5160,6 +5199,8 @@ public static class gen
         }
         else
         {
+            projects.init("sqlite3"); 
+
             string cs_pinvoke = File.ReadAllText(Path.Combine(root, "src/cs/sqlite3_pinvoke.cs"));
             using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_sqlite3.cs")))
             {
@@ -5206,6 +5247,11 @@ public static class gen
 
             // --------------------------------
             // assign all the guids
+
+            foreach (config_sqlite3 cfg in projects.items_sqlite3)
+            {
+                cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+            }
 
             foreach (config_sqlite3 cfg in projects.items_sqlite3)
             {
