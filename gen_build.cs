@@ -4108,7 +4108,16 @@ public static class gen
                 case "net45":
                 case "netstandard11": // TODO because this is used for netcoreapp, kinda hackish
                     f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.v110_xp", gen.ROOT_NAME, what));
+
+                    if (what == "xsqlite3") // <---- lol... ^
+                    {
+                        f.WriteAttributeString("id", string.Format("{0}.lib.{1}.v110", gen.ROOT_NAME, what));
+                    }
+                    else
+                    {
+                        f.WriteAttributeString("id", string.Format("{0}.lib.{1}.v110_xp", gen.ROOT_NAME, what));
+                    }
+
                     f.WriteAttributeString("version", NUSPEC_VERSION);
                     f.WriteEndElement(); // dependency
 
