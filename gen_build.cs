@@ -3162,7 +3162,24 @@ public static class gen
 
 			f.WriteStartElement("dependencies");
 
-            write_dependency_group(f, "android", DEP_NONE);
+			// list out core_csproj
+			var items_core = projects.items_csproj.Where(item => item.area == "core");
+			foreach (var cfg in items_core)
+			{
+				switch (cfg.env)
+				{
+					case "win8":
+					case "netstandard10":
+						break;
+					default:
+						write_dependency_group(f, cfg.env, DEP_NONE);
+						break;
+				}
+			}
+			// write_dependency_group(f, "wp80", DEP_NONE);
+			write_dependency_group(f, null, DEP_NONE);
+/*
+			write_dependency_group(f, "android", DEP_NONE);
             write_dependency_group(f, "ios_unified", DEP_NONE);
             write_dependency_group(f, "macos", DEP_NONE);
             // TODO write_dependency_group(f, "watchos", DEP_NONE);
@@ -3178,7 +3195,7 @@ public static class gen
        ///     write_dependency_group(f, "profile259", DEP_NONE);
             write_dependency_group(f, "netstandard11", DEP_NONE);
             write_dependency_group(f, null, DEP_NONE);
-
+*/
 			f.WriteEndElement(); // dependencies
 
 			f.WriteEndElement(); // metadata
