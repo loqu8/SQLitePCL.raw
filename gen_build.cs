@@ -3161,26 +3161,15 @@ public static class gen
 			f.WriteElementString("tags", "sqlite pcl database xamarin monotouch ios monodroid android wp8 wpa netstandard uwp");
 
 			f.WriteStartElement("dependencies");
-			
-			/* the dependency_groups might tell us which platforms are supported
-			// list out core_csproj
-			var items_core = projects.items_csproj.Where(item => item.area == "core");
-			foreach (var cfg in items_core)
-			{
-				switch (cfg.env)
-				{
-					case "win8":
-					case "netstandard10":
-						break;
-					default:
-						write_dependency_group(f, cfg.env, DEP_NONE);
-						break;
-				}
-			}
-			// write_dependency_group(f, "wp80", DEP_NONE);
-			write_dependency_group(f, null, DEP_NONE);
-			*/
 
+			var items_providers = projects.items_csproj.Where(item => item.area == "provider");
+			foreach (var cfg in items_providers)
+			{
+				f.WriteComment(cfg.env);
+				write_dependency_group(f, cfg.env, DEP_NONE);
+			}
+
+			// TODO: this should come from our list of providers
 			write_dependency_group(f, "android", DEP_NONE);
             write_dependency_group(f, "ios_unified", DEP_NONE);
             write_dependency_group(f, "macos", DEP_NONE);
@@ -3204,15 +3193,16 @@ public static class gen
 
 			f.WriteStartElement("files");
 
-			foreach (config_csproj cfg in projects.items_csproj)
+			// write_dependency_group(f, "wp80", DEP_NONE);
+			write_dependency_group(f, null, DEP_NONE);
+
+			// list out core_csproj
+			var cfg_core_netstandard11 = projects.items_csproj.Where(item => item.area == "core" && item.env == "netstandard11").FirstOrDefault();
+
+			foreach (var cfg in items_providers)
 			{
-                if (cfg.area == "core")
-                {
-                    write_nuspec_file_entry(
-                            cfg,
-                            f
-                            );
-                }
+				f.WriteComment(cfg.env);
+				write_nuspec_file_entry(cfg_core_netstandard11, cfg.env, f);
 			}
 
 			f.WriteEndElement(); // files
