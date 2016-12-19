@@ -3161,7 +3161,8 @@ public static class gen
 			f.WriteElementString("tags", "sqlite pcl database xamarin monotouch ios monodroid android wp8 wpa netstandard uwp");
 
 			f.WriteStartElement("dependencies");
-
+			
+			/* the dependency_groups might tell us which platforms are supported
 			// list out core_csproj
 			var items_core = projects.items_csproj.Where(item => item.area == "core");
 			foreach (var cfg in items_core)
@@ -3178,7 +3179,8 @@ public static class gen
 			}
 			// write_dependency_group(f, "wp80", DEP_NONE);
 			write_dependency_group(f, null, DEP_NONE);
-/*
+			*/
+
 			write_dependency_group(f, "android", DEP_NONE);
             write_dependency_group(f, "ios_unified", DEP_NONE);
             write_dependency_group(f, "macos", DEP_NONE);
@@ -3195,7 +3197,7 @@ public static class gen
        ///     write_dependency_group(f, "profile259", DEP_NONE);
             write_dependency_group(f, "netstandard11", DEP_NONE);
             write_dependency_group(f, null, DEP_NONE);
-*/
+
 			f.WriteEndElement(); // dependencies
 
 			f.WriteEndElement(); // metadata
