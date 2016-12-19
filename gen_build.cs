@@ -1618,6 +1618,7 @@ public static class gen
 			case "net45":
 			case "net40":
 			case "net35":
+            case "uwp10":
 				write_reference(f, "System");
 				write_reference(f, "System.Core");
 				break;
