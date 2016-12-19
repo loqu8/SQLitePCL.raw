@@ -3170,32 +3170,11 @@ public static class gen
 				write_dependency_group(f, cfg.env, DEP_NONE);
 			}
 
-			// TODO: this should come from our list of providers
-			write_dependency_group(f, "android", DEP_NONE);
-            write_dependency_group(f, "ios_unified", DEP_NONE);
-            write_dependency_group(f, "macos", DEP_NONE);
-            // TODO write_dependency_group(f, "watchos", DEP_NONE);
-       ///     write_dependency_group(f, "net35", DEP_NONE);
-       ///     write_dependency_group(f, "net40", DEP_NONE);
-            write_dependency_group(f, "net45", DEP_NONE);
-       ///     write_dependency_group(f, "win81", DEP_NONE);
-       ///     write_dependency_group(f, "wpa81", DEP_NONE);
-       ///     write_dependency_group(f, "wp80", DEP_NONE);
-            write_dependency_group(f, "uwp10", DEP_NONE);
-       ///     write_dependency_group(f, "profile111", DEP_NONE);
-       ///     write_dependency_group(f, "profile136", DEP_NONE);
-       ///     write_dependency_group(f, "profile259", DEP_NONE);
-            write_dependency_group(f, "netstandard11", DEP_NONE);
-            write_dependency_group(f, null, DEP_NONE);
-
 			f.WriteEndElement(); // dependencies
 
 			f.WriteEndElement(); // metadata
 
 			f.WriteStartElement("files");
-
-			// write_dependency_group(f, "wp80", DEP_NONE);
-			write_dependency_group(f, null, DEP_NONE);
 
 			// list out core_csproj
 			var cfg_core_netstandard11 = projects.items_csproj.Where(item => item.area == "core" && item.env == "netstandard11").FirstOrDefault();
