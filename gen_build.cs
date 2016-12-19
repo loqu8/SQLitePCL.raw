@@ -4125,12 +4125,11 @@ public static class gen
                     f.WriteAttributeString("id", string.Format("{0}.lib.{1}.osx", gen.ROOT_NAME, what));
                     f.WriteAttributeString("version", NUSPEC_VERSION);
                     f.WriteEndElement(); // dependency
-                    /*
+                    
                     f.WriteStartElement("dependency");
                     f.WriteAttributeString("id", string.Format("{0}.lib.{1}.linux", gen.ROOT_NAME, what));
                     f.WriteAttributeString("version", NUSPEC_VERSION);
                     f.WriteEndElement(); // dependency
-                    */
                     break;
                 default:
                     f.WriteStartElement("dependency");
@@ -5170,7 +5169,7 @@ public static class gen
 
                 tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.windows.nuspec {2}\"", gen.ROOT_NAME, customBuild.what, pack_flags);
                 tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.osx.nuspec {2}\"", gen.ROOT_NAME, customBuild.what, pack_flags);
-                //tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.linux.nuspec\"", gen.ROOT_NAME, customBuild.what);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.linux.nuspec\"", gen.ROOT_NAME, customBuild.what);
 
                 foreach (config_csproj cfg in projects.items_csproj)
                 {
