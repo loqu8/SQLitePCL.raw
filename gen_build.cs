@@ -1619,8 +1619,8 @@ public static class gen
 			case "net40":
 			case "net35":
             case "uwp10":
-				write_reference(f, "System");
-				write_reference(f, "System.Core");
+				//write_reference(f, "System");
+				//write_reference(f, "System.Core");
 				break;
 		}
 		switch (env)
