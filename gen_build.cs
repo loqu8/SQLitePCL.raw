@@ -3554,7 +3554,7 @@ public static class gen
                     gen_nuget_targets_osx(top, tname, string.Format("lib{0}.dylib", what));
                     break;
 				case "linux":
-					lib = string.Format("lib{0}.dylib", what);
+					lib = string.Format("lib{0}.so", what);
 					libPath = libPattern
 						.Replace("$which", "sqlite")
 						.Replace("$platform", "linux")
