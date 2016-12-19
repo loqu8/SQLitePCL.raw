@@ -3553,7 +3553,23 @@ public static class gen
 
                     gen_nuget_targets_osx(top, tname, string.Format("lib{0}.dylib", what));
                     break;
-                default:
+				case "linux":
+					lib = string.Format("lib{0}.dylib", what);
+					libPath = libPattern
+						.Replace("$which", "sqlite")
+						.Replace("$platform", "linux")
+						.Replace("$arch", "{0}")
+						.Replace("$lib", lib);
+
+
+					f.WriteStartElement("file");
+					f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "x86_64")));
+					f.WriteAttributeString("target", string.Format("runtimes\\linux-x64\\native\\{0}", lib));
+					f.WriteEndElement(); // file
+
+					gen_nuget_targets_linux(top, tname, string.Format("lib{0}.dylib", what));
+					break;
+				default:
                     throw new Exception();
             }
             f.WriteStartElement("file");
@@ -5110,8 +5126,9 @@ public static class gen
             gen_nuspec(top, root, "windows", customBuild.what, customBuild.libRoot, customBuild.libPattern);
             gen_nuspec(top, root, "uwp", customBuild.what, customBuild.libRoot, customBuild.libPattern);
             gen_nuspec(top, root, "osx", customBuild.what, customBuild.libRoot, customBuild.libPattern);
+			gen_nuspec(top, root, "linux", customBuild.what, customBuild.libRoot, customBuild.libPattern);
 
-            foreach (config_csproj cfg in projects.items_csproj)
+			foreach (config_csproj cfg in projects.items_csproj)
             {
                 if (cfg.area == "provider" && cfg.env != "wp80")
                 {
