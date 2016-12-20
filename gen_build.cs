@@ -395,7 +395,7 @@ public static class projects
 		case "wpa81":
 			return "v120_wp81";
 		case "uwp10":
-			return "uwp";
+			return "v140";
 		case "win8":
 			return "v110";
 		case "win81":
@@ -3459,7 +3459,7 @@ public static class gen
             string tname = string.Format("{0}.targets", id);
             switch (plat)
             {
-                case "uwp":
+                case "v140":
                     lib = string.Format("{0}.dll", what);
                     libPath = libPattern
                         .Replace("$which", "sqlite")
@@ -5095,7 +5095,7 @@ public static class gen
             gen_nuspec_bundle(top, what);
 
             gen_nuspec(top, root, "windows", customBuild.what, customBuild.libRoot, customBuild.libPattern);
-            gen_nuspec(top, root, "uwp", customBuild.what, customBuild.libRoot, customBuild.libPattern);
+            gen_nuspec(top, root, "v140", customBuild.what, customBuild.libRoot, customBuild.libPattern);
             gen_nuspec(top, root, "osx", customBuild.what, customBuild.libRoot, customBuild.libPattern);
 			gen_nuspec(top, root, "linux", customBuild.what, customBuild.libRoot, customBuild.libPattern);
 
