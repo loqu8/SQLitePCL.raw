@@ -4,6 +4,11 @@
 SQLitePCL.raw is a Portable Class Library (PCL) for low-level (raw)
 access to SQLite. License:  Apache License v2.
 
+## Loqu8-related notes
+* .dat file no longer packaged inside lib because of size related issues
+* To enable Snowball and ICU, you must 'PRAGMA u_setDataDirectory('C:\blahblah\');' to a directory that contains the .dat file
+* .dat file is in ownCloud\Loqu8\ext\sqlite\data
+
 # TLDR
 
 Add this package:
