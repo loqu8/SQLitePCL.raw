@@ -1278,6 +1278,12 @@ namespace SQLitePCL
         }
 
             [DllImport(SQLITE_DLL, ExactSpelling=true, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void sqlite3_activate_cerod(byte[] passPhrase);
+
+            [DllImport(SQLITE_DLL, ExactSpelling=true, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void sqlite3_activate_see(byte[] passPhrase);
+
+            [DllImport(SQLITE_DLL, ExactSpelling=true, CallingConvention = CallingConvention.Cdecl)]
             public static extern int sqlite3_close(IntPtr db);
 
             [DllImport(SQLITE_DLL, ExactSpelling=true, CallingConvention = CallingConvention.Cdecl)]
