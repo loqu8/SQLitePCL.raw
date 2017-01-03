@@ -273,12 +273,12 @@ namespace SQLitePCL
 
         static public void sqlite3_activate_cerod(byte[] passPhrase)
         {
-            _imp.sqlite3_activate_cerod(byte[] passphrase);
+            _imp.sqlite3_activate_cerod(passPhrase);
         }
 
         static public void sqlite3_activate_see(byte[] passPhrase)
         {
-            _imp.sqlite3_activate_see(byte[] passphrase);
+            _imp.sqlite3_activate_see(passPhrase);
         }
 
         static public int sqlite3_open(string filename, out sqlite3 db)
