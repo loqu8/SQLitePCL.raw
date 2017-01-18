@@ -1341,7 +1341,7 @@ public static class gen
 	private const string GUID_TEST = "{3AC096D0-A1C2-E12C-1390-A8335801FDAB}";
 	private const string GUID_UAP = "{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A}";
 
-    public const string ROOT_NAME = "SQLitePCLRaw";
+    public const string ROOT_NAME = "Loqu8.SQLitePCLRaw";
 
 	private static void write_reference(XmlWriter f, string s)
 	{
