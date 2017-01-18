@@ -40,6 +40,16 @@ namespace SQLitePCL
         {
         }
 
+        void ISQLite3Provider.sqlite3_activate_cerod(byte[] passPhrase)
+        {
+	    throw new Exception(GRIPE);
+        }
+
+        void ISQLite3Provider.sqlite3_activate_see(byte[] passPhrase)
+        {
+	    throw new Exception(GRIPE);
+        }
+
         int ISQLite3Provider.sqlite3_open(string filename, out IntPtr db)
         {
 	    throw new Exception(GRIPE);

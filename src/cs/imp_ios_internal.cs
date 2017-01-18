@@ -90,3 +90,27 @@
 
 #endif
 
+#if IOS_PACKAGED_WHAT
+
+#if PLATFORM_UNIFIED
+
+[assembly: ObjCRuntime.LinkWith(
+        "libWHAT.a",
+        LinkTarget = ObjCRuntime.LinkTarget.Simulator | ObjCRuntime.LinkTarget.Simulator64 | ObjCRuntime.LinkTarget.ArmV7 | ObjCRuntime.LinkTarget.ArmV7s | ObjCRuntime.LinkTarget.Arm64,
+        ForceLoad=true,
+        LinkerFlags="",
+        Frameworks=""
+        )
+        ]
+#else
+[assembly: MonoTouch.ObjCRuntime.LinkWith(
+        "libWHAT.a",
+        LinkTarget = MonoTouch.ObjCRuntime.LinkTarget.Simulator | MonoTouch.ObjCRuntime.LinkTarget.Simulator64 | MonoTouch.ObjCRuntime.LinkTarget.ArmV7 | MonoTouch.ObjCRuntime.LinkTarget.ArmV7s | MonoTouch.ObjCRuntime.LinkTarget.Arm64,
+        ForceLoad=true,
+        LinkerFlags="",
+        Frameworks=""
+        )
+        ]
+#endif
+
+#endif

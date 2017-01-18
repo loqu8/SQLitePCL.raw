@@ -40,6 +40,8 @@ namespace SQLitePCL
 		    SQLitePCL.raw.SetProvider(new SQLitePCL.SQLite3Provider_internal());
 #elif PROVIDER_sqlcipher
 		    SQLitePCL.raw.SetProvider(new SQLitePCL.SQLite3Provider_sqlcipher());
+#elif PROVIDER_WHAT
+		    SQLitePCL.raw.SetProvider(new SQLitePCL.SQLite3Provider_WHAT());
 #elif PROVIDER_none
             throw new Exception("This is the 'bait'.  You probably need to add one of the SQLitePCLRaw.bundle_* nuget packages to your platform project.");
 #else
@@ -48,4 +50,3 @@ namespace SQLitePCL
 	    }
     }
 }
-

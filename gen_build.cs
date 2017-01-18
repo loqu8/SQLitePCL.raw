@@ -85,7 +85,7 @@ public static class projects
     {
         // bundle_winsqlite3
         items_csproj.Add(config_csproj.create_batteries("batteries_winsqlite3", ver, "uwp10", "winsqlite3"));
-        
+
         // bundle_green
         items_csproj.Add(config_csproj.create_batteries("batteries_green",  ver,"ios_unified", "sqlite3"));
         items_csproj.Add(config_csproj.create_batteries("batteries_green",  ver,"macos", "sqlite3"));
@@ -101,7 +101,7 @@ public static class projects
         items_csproj.Add(config_csproj.create_wp80_batteries("batteries_green", ver, "arm"));
         items_csproj.Add(config_csproj.create_wp80_batteries("batteries_green", ver, "x86"));
 
-        // the following item builds for netstandard11 
+        // the following item builds for netstandard11
         // but overrides the nuget target env to place it in netcoreapp
         items_csproj.Add(config_csproj.create_batteries("batteries_green",  ver,"netstandard11", "e_sqlite3", "netcoreapp"));
 
@@ -125,7 +125,7 @@ public static class projects
         items_csproj.Add(config_csproj.create_wp80_batteries("batteries_e_sqlite3", ver, "arm"));
         items_csproj.Add(config_csproj.create_wp80_batteries("batteries_e_sqlite3", ver, "x86"));
 
-        // the following item builds for netstandard11 
+        // the following item builds for netstandard11
         // but overrides the nuget target env to place it in netcoreapp
         items_csproj.Add(config_csproj.create_batteries("batteries_e_sqlite3", ver, "netstandard11", "e_sqlite3", "netcoreapp"));
 
@@ -143,7 +143,7 @@ public static class projects
         items_csproj.Add(config_csproj.create_batteries("batteries_sqlcipher", ver, "net40", "sqlcipher"));
         items_csproj.Add(config_csproj.create_batteries("batteries_sqlcipher", ver, "net45", "sqlcipher"));
 
-        // the following item builds for netstandard11 
+        // the following item builds for netstandard11
         // but overrides the nuget target env to place it in netcoreapp
         items_csproj.Add(config_csproj.create_batteries("batteries_sqlcipher", ver, "netstandard11", "sqlcipher", "netcoreapp"));
 
@@ -268,7 +268,7 @@ public static class projects
 	{
         // using netstandard for the tests would require switching to the
         // xunit pre
-        
+
         //items_test.Add(config_csproj.create_portable_test("netstandard11"));
         items_test.Add(config_csproj.create_portable_test("profile259"));
 
@@ -285,46 +285,46 @@ public static class projects
 
     private static void init_testapps()
     {
-        items_testapp.Add(new config_testapp { 
-                env="android", 
-                cpu="anycpu", 
+        items_testapp.Add(new config_testapp {
+                env="android",
+                cpu="anycpu",
                 bundle="bundle_sqlcipher",
                 });
-        items_testapp.Add(new config_testapp { 
-                env="android", 
-                cpu="anycpu", 
+        items_testapp.Add(new config_testapp {
+                env="android",
+                cpu="anycpu",
                 bundle="bundle_e_sqlite3",
                 });
-        items_testapp.Add(new config_testapp { 
-                env="android", 
-                cpu="anycpu", 
+        items_testapp.Add(new config_testapp {
+                env="android",
+                cpu="anycpu",
                 bundle="bundle_green",
                 });
 
-        items_testapp.Add(new config_testapp { 
-                env="wp81", 
-                cpu="x86", 
+        items_testapp.Add(new config_testapp {
+                env="wp81",
+                cpu="x86",
                 bundle="bundle_e_sqlite3",
                 });
-        items_testapp.Add(new config_testapp { 
-                env="wp81", 
-                cpu="x86", 
+        items_testapp.Add(new config_testapp {
+                env="wp81",
+                cpu="x86",
                 bundle="bundle_green",
                 });
 
-        items_testapp.Add(new config_testapp { 
-                env="uwp10", 
-                cpu="x86", 
+        items_testapp.Add(new config_testapp {
+                env="uwp10",
+                cpu="x86",
                 bundle="bundle_green",
                 });
-        items_testapp.Add(new config_testapp { 
-                env="uwp10", 
-                cpu="x86", 
+        items_testapp.Add(new config_testapp {
+                env="uwp10",
+                cpu="x86",
                 bundle="bundle_e_sqlite3",
                 });
-        items_testapp.Add(new config_testapp { 
-                env="uwp10", 
-                cpu="x64", 
+        items_testapp.Add(new config_testapp {
+                env="uwp10",
+                cpu="x64",
                 bundle="bundle_winsqlite3",
                 });
     }
@@ -493,28 +493,33 @@ public static class projects
 
 	public static config_csproj find_core(string env)
 	{
-        config_csproj cfg = find("core", env);
+        // See https://docs.nuget.org/ndocs/schema/target-frameworks
+        config_csproj cfg;
+
+        // prefer profile111 for a bit - issues with mac?
+        switch (env)
+        {
+            case "net35":
+                cfg = find("core", env);
+                break;
+            case "net40":
+                cfg = find("core", "profile136");
+                break;
+            default:
+                cfg = find("core", "netstandard11");
+                if (cfg == null)
+                    cfg = find("core", "profile259");
+                if (cfg == null)
+                    cfg = find("core", "profile111");
+                break;
+        }
+
+        // as a last resort, find the matching core, e.g., net45 gets net45 core
         if (cfg == null)
         {
-            // TODO need to find a core that is compatible with env
-            // TODO this should be smarter
-            switch (env)
-            {
-                case "net40":
-                    cfg = find("core", "profile136");
-                    break;
-                case "net45":
-                    cfg = find("core", "profile111");
-                    break;
-                case "win81":
-                    cfg = find("core", "profile111");
-                    break;
-                default:
-                    cfg = find("core", "netstandard11");
-                    //cfg = find("core", "profile259");
-                    break;
-            }
+            cfg = find("core", env);
         }
+
         if (cfg != null)
         {
             return cfg;
@@ -763,7 +768,7 @@ public class config_esqlite3 : config_info
 	{
 		throw new NotImplementedException();
 	}
-	
+
 }
 
 public static class config_cs
@@ -826,7 +831,7 @@ public static class config_cs
 				throw new Exception(env);
 		}
 	}
-					
+
 	public static string get_nuget_framework_name(string env)
 	{
 		switch (env)
@@ -873,7 +878,7 @@ public static class config_cs
 				throw new Exception(env);
 		}
 	}
-					
+
 }
 
 public class config_testapp
@@ -987,7 +992,10 @@ public class config_csproj : config_info
                         cfg.defines.Add("IOS_PACKAGED_SQLCIPHER");
                         break;
                     default:
-                        throw new Exception(what);
+                        // throw new Exception(what);
+                        // we might not use this
+                        cfg.defines.Add(string.Format("IOS_PACKAGED_{0}", cfg.what));
+                        break;
                 }
                 break;
         }
@@ -1005,7 +1013,9 @@ public class config_csproj : config_info
                         cfg.csfiles_src.Add("imp_ios_internal.cs");
                         break;
                     default:
-                        throw new Exception(what);
+                        //throw new Exception(what);
+                        cfg.csfiles_bld.Add(string.Format("imp_ios_internal_{0}.cs", what));     // but we have to make our own
+                        break;
                 }
                 break;
             default:
@@ -1075,7 +1085,9 @@ public class config_csproj : config_info
                         cfg.csfiles_bld.Add("pinvoke_sqlcipher.cs");
                         break;
                     default:
-                        throw new Exception(what);
+                        //throw new Exception(what);
+                        cfg.csfiles_bld.Add(string.Format("pinvoke_{0}.cs", cfg.what));
+                        break;
                 }
                 break;
         }
@@ -1175,7 +1187,22 @@ public class config_csproj : config_info
                 break;
             case 2:
                 cfg.assemblyname = string.Format("{0}.batteries_v2", cfg.root_name);
-                cfg.csfiles_src.Add("batteries_v2.cs");
+                switch (cfg.what)
+                {
+                    case "sqlite3":
+                    case "e_sqlite3":
+                    case "custom_sqlite3":
+                    case "winsqlite3":
+                    case "internal":
+                    case "sqlcipher":
+                    case "":            // none (for PCL)
+                    case null:          // none (for PCL)
+                        cfg.csfiles_src.Add("batteries_v2.cs");
+                        break;
+                    default:
+                        cfg.csfiles_bld.Add(string.Format("batteries_v2_{0}.cs", cfg.what));
+                        break;
+                }
                 break;
             default:
                 throw new NotImplementedException();
@@ -1189,6 +1216,7 @@ public class config_csproj : config_info
         cfg.area = area;
         cfg.nuget_override_target_env = nuget_override_target_env;
         cfg.name = string.Format("{0}.v{1}.{2}.{3}.{4}", cfg.root_name, ver, area, (what!=null)?what:"none", env);
+        cfg.what = what;        // TODO: will having this have bad effects
         set_batteries_version(cfg, ver);
         cfg.defines.Add("PROVIDER_" + ((what!=null)?what:"none"));
         cfg.ref_core = true;
@@ -1245,7 +1273,7 @@ public class config_csproj : config_info
 	{
 		return string.Format("{0}.csproj", name);
 	}
-	
+
 	public string fixed_cpu()
 	{
 		if (cpu == "anycpu")
@@ -1313,7 +1341,7 @@ public static class gen
 	private const string GUID_TEST = "{3AC096D0-A1C2-E12C-1390-A8335801FDAB}";
 	private const string GUID_UAP = "{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A}";
 
-    public const string ROOT_NAME = "SQLitePCLRaw";
+    public const string ROOT_NAME = "Loqu8.SQLitePCLRaw";
 
 	private static void write_reference(XmlWriter f, string s)
 	{
@@ -1590,8 +1618,9 @@ public static class gen
 			case "net45":
 			case "net40":
 			case "net35":
-				write_reference(f, "System");
-				write_reference(f, "System.Core");
+            case "uwp10":
+				//write_reference(f, "System");
+				//write_reference(f, "System.Core");
 				break;
 		}
 		switch (env)
@@ -1603,7 +1632,8 @@ public static class gen
 				write_reference(f, "Xamarin.WatchOS");
 				break;
 			case "macos":
-				write_reference(f, "Xamarin.Mac");
+                write_reference(f, "System.Runtime");
+                write_reference(f, "Xamarin.Mac");
 				break;
 			case "ios_classic":
 				write_reference(f, "monotouch");
@@ -2305,6 +2335,30 @@ public static class gen
         fix_version(project_dot_json);
     }
 
+    private static void write_android_native_libs_patterned(string libRoot, XmlWriter f, string what, string which, string libPattern)
+    {
+        var archs = new List<string> {
+            "x86", "x86_64", "armeabi", "armeabi-v7a", "arm64-v8a",
+//            "mips", "mips64"
+        };
+
+        string lib = string.Format("lib{0}.so", what);
+        string libPath = libPattern
+            .Replace("$which", which)
+            .Replace("$platform", "android")
+            .Replace("$arch", "{0}")
+            .Replace("$lib", lib);
+
+        foreach (var arch in archs)
+        {
+            f.WriteStartElement("EmbeddedNativeLibrary");
+            f.WriteAttributeString("Include", Path.Combine(libRoot, string.Format(libPath, arch)));
+            f.WriteElementString("CopyToOutputDirectory", "Always");
+            f.WriteElementString("Link", string.Format("{0}\\{1}", arch, lib));
+            f.WriteEndElement(); // EmbeddedNativeLibrary
+        }
+    }
+
     private static void write_android_native_libs(string root, XmlWriter f, string which)
     {
         f.WriteStartElement("EmbeddedNativeLibrary");
@@ -2411,8 +2465,10 @@ public static class gen
 		}
 	}
 
-	private static void gen_csproj(config_csproj cfg, string root, string top)
+	private static void gen_csproj(config_csproj cfg, string root, string top, string libRoot = null, string libPattern = null)
 	{
+        if (libRoot == null) libRoot = root;
+
 		XmlWriterSettings settings = new XmlWriterSettings();
 		settings.Indent = true;
 		settings.OmitXmlDeclaration = false;
@@ -2568,39 +2624,54 @@ public static class gen
 
             if (cfg.area == "lib")
             {
-			switch (cfg.env)
-			{
-				case "ios_unified":
+                switch (cfg.env)
+                {
+                    case "ios_unified":
                         if (cfg.what == "e_sqlite3")
                         {
                             f.WriteStartElement("ItemGroup");
                             // TODO warning says this is deprecated
                             f.WriteStartElement("ManifestResourceWithNoCulture");
                             // TODO underscore
-                            f.WriteAttributeString("Include", Path.Combine(root, "apple\\libs\\ios\\sqlite3\\e_sqlite3.a"));
+                            f.WriteAttributeString("Include", Path.Combine(libRoot, "apple\\libs\\ios\\sqlite3\\e_sqlite3.a"));
                             f.WriteElementString("Link", "e_sqlite3.a");
                             f.WriteEndElement(); // ManifestResourceWithNoCulture
                             f.WriteEndElement(); // ItemGroup
                         }
-			else if (cfg.what == "sqlcipher")
+                        else if (cfg.what == "sqlcipher")
                         {
                             f.WriteStartElement("ItemGroup");
-
                             // TODO warning says this is deprecated
                             f.WriteStartElement("ManifestResourceWithNoCulture");
-                            f.WriteAttributeString("Include", Path.Combine(root, "couchbase-lite-libsqlcipher\\libs\\ios\\libsqlcipher.a"));
+                            f.WriteAttributeString("Include", Path.Combine(libRoot, "couchbase-lite-libsqlcipher\\libs\\ios\\libsqlcipher.a"));
                             f.WriteElementString("Link", "libsqlcipher.a");
                             f.WriteEndElement(); // ManifestResourceWithNoCulture
-
                             f.WriteEndElement(); // ItemGroup
                         }
-			else
-			{
-				throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
-			}
-					break;
+                        else
+                        {
+                            // throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
 
-					case "watchos":
+                            // for now, if you have multiple libs, use libtool -static -o new.a old1.a old2.a ... to make a gigantic universal one
+                            string lib = string.Format("lib{0}.a", cfg.what);
+                            string libPath = libPattern
+                                .Replace("$which", "sqlite")
+                                .Replace("$platform", "ios")
+                                .Replace("$arch", "universal")
+                                .Replace("$lib", lib);
+
+                            f.WriteStartElement("ItemGroup");
+                            // TODO warning says this is deprecated
+                            f.WriteStartElement("ManifestResourceWithNoCulture");
+                            // TODO underscore
+                            f.WriteAttributeString("Include", Path.Combine(libRoot, libPath));
+                            f.WriteElementString("Link", lib);
+                            f.WriteEndElement(); // ManifestResourceWithNoCulture
+                            f.WriteEndElement(); // ItemGroup
+                        }
+                        break;
+
+                    case "watchos":
                         if (cfg.what == "e_sqlite3")
                         {
                             f.WriteStartElement("ItemGroup");
@@ -2612,7 +2683,7 @@ public static class gen
                             f.WriteEndElement(); // ManifestResourceWithNoCulture
                             f.WriteEndElement(); // ItemGroup
                         }
-            else if (cfg.what == "sqlcipher")
+                        else if (cfg.what == "sqlcipher")
                         {
                             f.WriteStartElement("ItemGroup");
 
@@ -2624,11 +2695,11 @@ public static class gen
 
                             f.WriteEndElement(); // ItemGroup
                         }
-            else
-            {
-                throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
-            }
-                    break;
+                        else
+                        {
+                            throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
+                        }
+                        break;
 
                     case "ios_classic":
                         if (cfg.what == "e_sqlite3")
@@ -2642,7 +2713,7 @@ public static class gen
                             f.WriteEndElement(); // ManifestResourceWithNoCulture
                             f.WriteEndElement(); // ItemGroup
                         }
-			else if (cfg.what == "sqlcipher")
+                        else if (cfg.what == "sqlcipher")
                         {
                             f.WriteStartElement("ItemGroup");
 
@@ -2661,32 +2732,34 @@ public static class gen
 
                             f.WriteEndElement(); // ItemGroup
                         }
-			else
-			{
-				throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
-			}
-						break;
+                        else
+                        {
+                            throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
+                        }
+                        break;
 
-					case "android":
-						if (cfg.what == "e_sqlite3")
-						{
+                    case "android":
+                        if (cfg.what == "e_sqlite3")
+                        {
                             f.WriteStartElement("ItemGroup");
                             write_android_native_libs(root, f, "sqlite3");
                             f.WriteEndElement(); // ItemGroup
-						}
-						else if (cfg.what == "sqlcipher")
-						{
+                        }
+                        else if (cfg.what == "sqlcipher")
+                        {
                             f.WriteStartElement("ItemGroup");
                             write_android_native_libs_sqlcipher(root, f);
                             f.WriteEndElement(); // ItemGroup
                         }
-			else
-			{
-				throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
-			}
-
-						break;
-            }
+                        else
+                        {
+                            // throw new NotImplementedException(string.Format("{0}, {1}", cfg.env, cfg.what));
+                            f.WriteStartElement("ItemGroup");
+                            write_android_native_libs_patterned(libRoot, f, cfg.what, "sqlite", libPattern);
+                            f.WriteEndElement(); // ItemGroup
+                        }
+                        break;
+                }
             }
 
             f.WriteStartElement("ItemGroup");
@@ -3019,7 +3092,7 @@ public static class gen
 		f.WriteEndElement(); // file
 	}
 
-	public static string NUSPEC_VERSION = string.Format("1.1.2-pre{0}", DateTime.Now.ToString("yyyyMMddHHmmss")); 
+	public static string NUSPEC_VERSION = string.Format("1.1.2-pre{0}", DateTime.Now.ToString("yyyyMMddHHmmss"));
 	//public static string NUSPEC_VERSION = "1.0.0-PLACEHOLDER";
 	//public static string NUSPEC_VERSION = "1.1.1";
 
@@ -3090,22 +3163,12 @@ public static class gen
 
 			f.WriteStartElement("dependencies");
 
-            write_dependency_group(f, "android", DEP_NONE);
-            write_dependency_group(f, "ios_unified", DEP_NONE);
-            write_dependency_group(f, "macos", DEP_NONE);
-            // TODO write_dependency_group(f, "watchos", DEP_NONE);
-            write_dependency_group(f, "net35", DEP_NONE);
-            write_dependency_group(f, "net40", DEP_NONE);
-            write_dependency_group(f, "net45", DEP_NONE);
-            write_dependency_group(f, "win81", DEP_NONE);
-            write_dependency_group(f, "wpa81", DEP_NONE);
-            write_dependency_group(f, "wp80", DEP_NONE);
-            write_dependency_group(f, "uwp10", DEP_NONE);
-            write_dependency_group(f, "profile111", DEP_NONE);
-            write_dependency_group(f, "profile136", DEP_NONE);
-            write_dependency_group(f, "profile259", DEP_NONE);
-            write_dependency_group(f, "netstandard11", DEP_NONE);
-            write_dependency_group(f, null, DEP_NONE);
+			var items_providers = projects.items_csproj.Where(item => item.area == "provider");
+			foreach (var cfg in items_providers)
+			{
+				f.WriteComment(cfg.env);
+				write_dependency_group(f, cfg.env, DEP_NONE);
+			}
 
 			f.WriteEndElement(); // dependencies
 
@@ -3113,15 +3176,13 @@ public static class gen
 
 			f.WriteStartElement("files");
 
-			foreach (config_csproj cfg in projects.items_csproj)
+			// list out core_csproj
+			var cfg_core_netstandard11 = projects.items_csproj.Where(item => item.area == "core" && item.env == "netstandard11").FirstOrDefault();
+
+			foreach (var cfg in items_providers)
 			{
-                if (cfg.area == "core")
-                {
-                    write_nuspec_file_entry(
-                            cfg, 
-                            f
-                            );
-                }
+				f.WriteComment(cfg.env);
+				write_nuspec_file_entry(cfg_core_netstandard11, cfg.env, f);
 			}
 
 			f.WriteEndElement(); // files
@@ -3167,10 +3228,10 @@ public static class gen
 
 			f.WriteStartElement("files");
 
-			foreach (config_sqlite3 other in cfg.get_sqlite3_items()) 
+			foreach (config_sqlite3 other in cfg.get_sqlite3_items())
 			{
 				write_nuspec_file_entry(
-						other, 
+						other,
 						f
 						);
 			}
@@ -3235,7 +3296,7 @@ public static class gen
 			f.WriteStartElement("files");
 
             write_nuspec_file_entry(
-                    cfg, 
+                    cfg,
                     f
                     );
 
@@ -3346,7 +3407,7 @@ public static class gen
 			f.WriteStartElement("files");
 
 			write_nuspec_file_entry(
-					cfg, 
+					cfg,
 					f
 					);
 
@@ -3358,7 +3419,145 @@ public static class gen
 		}
 	}
 
-	private static void gen_nuspec_e_sqlite3(string top, string root, string plat)
+    private static void gen_nuspec(string top, string root, string plat, string what, string libRoot, string libPattern)
+    {
+        XmlWriterSettings settings = new XmlWriterSettings();
+        settings.Indent = true;
+        settings.OmitXmlDeclaration = false;
+
+        string id = string.Format("{2}.lib.{1}.{0}", plat, what, ROOT_NAME);
+        using (XmlWriter f = XmlWriter.Create(Path.Combine(top, string.Format("{0}.nuspec", id)), settings))
+        {
+            f.WriteStartDocument();
+            f.WriteComment("Automatically generated");
+
+            f.WriteStartElement("package", "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd");
+
+            f.WriteStartElement("metadata");
+            f.WriteAttributeString("minClientVersion", "2.8.1");
+
+            f.WriteElementString("id", id);
+            f.WriteElementString("version", NUSPEC_VERSION);
+            f.WriteElementString("title", string.Format("Native code only ({1}, {0}) for SQLitePCLRaw", plat, what));
+            f.WriteElementString("description", 
+                string.Format("This package contains a platform-specific native code build of {0} for use with SQLitePCL.raw.", what));
+            f.WriteElementString("authors", "SQLite, Zetetic");
+            f.WriteElementString("owners", "Eric Sink");
+            f.WriteElementString("copyright", "Copyright 2014-2016 Zumero, LLC");
+            f.WriteElementString("requireLicenseAcceptance", "false");
+            f.WriteElementString("licenseUrl", "https://raw.github.com/ericsink/SQLitePCL.raw/master/LICENSE.TXT");
+            f.WriteElementString("projectUrl", "https://github.com/ericsink/SQLitePCL.raw");
+            f.WriteElementString("releaseNotes", NUSPEC_RELEASE_NOTES);
+            f.WriteElementString("summary", "A Portable Class Library (PCL) for low-level (raw) access to SQLite");
+            f.WriteElementString("tags", "sqlite pcl database monotouch ios monodroid android wp8 wpa");
+
+            f.WriteEndElement(); // metadata
+
+            f.WriteStartElement("files");
+
+            string lib, libPath;
+            string tname = string.Format("{0}.targets", id);
+            switch (plat)
+            {
+                case "v140":
+                    lib = string.Format("{0}.dll", what);
+                    libPath = libPattern
+                        .Replace("$which", "sqlite")
+                        .Replace("$platform", "uwp")
+                        .Replace("$arch", "{0}")
+                        .Replace("$lib", lib);
+
+                    // TODO do we need amd64 version here?
+
+                    f.WriteStartElement("file");
+                    f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "x86")));
+                    f.WriteAttributeString("target", string.Format("runtimes\\win10-x86\\native\\{0}", lib));
+                    f.WriteEndElement(); // file
+
+                    f.WriteStartElement("file");
+                    f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "x64")));
+                    f.WriteAttributeString("target", string.Format("runtimes\\win10-x64\\native\\{0}", lib));
+                    f.WriteEndElement(); // file
+
+                    f.WriteStartElement("file");
+                    f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "arm")));
+                    f.WriteAttributeString("target", string.Format("runtimes\\win10-arm\\native\\{0}", lib));
+                    f.WriteEndElement(); // file
+
+                    gen_nuget_targets_windows_uwp(top, tname, string.Format("{0}.dll", what));
+                    break;
+
+                case "windows":
+                    lib = string.Format("{0}.dll", what);
+                    libPath = libPattern
+                        .Replace("$which", "sqlite")
+                        .Replace("$platform", "win")
+                        .Replace("$arch", "{0}")
+                        .Replace("$lib", lib);
+
+                    // TODO do we need amd64 version here?
+
+                    f.WriteStartElement("file");
+                    f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "x86")));
+                    f.WriteAttributeString("target", string.Format("runtimes\\win7-x86\\native\\{0}", lib));
+                    f.WriteEndElement(); // file
+
+                    f.WriteStartElement("file");
+                    f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "x64")));
+                    f.WriteAttributeString("target", string.Format("runtimes\\win7-x64\\native\\{0}", lib));
+                    f.WriteEndElement(); // file
+
+                    gen_nuget_targets_windows(top, tname, string.Format("{0}.dll", what));
+                    break;
+                case "osx":
+                    lib = string.Format("lib{0}.dylib", what);
+                    libPath = libPattern
+                        .Replace("$which", "sqlite")
+                        .Replace("$platform", "osx")
+                        .Replace("$arch", "{0}")
+                        .Replace("$lib", lib);
+
+
+                    f.WriteStartElement("file");
+                    f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "universal")));
+                    f.WriteAttributeString("target", string.Format("runtimes\\osx-x64\\native\\{0}", lib));
+                    f.WriteEndElement(); // file
+
+                    gen_nuget_targets_osx(top, tname, string.Format("lib{0}.dylib", what));
+                    break;
+				case "linux":
+					lib = string.Format("lib{0}.so", what);
+					libPath = libPattern
+						.Replace("$which", "sqlite")
+						.Replace("$platform", "linux")
+						.Replace("$arch", "{0}")
+						.Replace("$lib", lib);
+
+
+					f.WriteStartElement("file");
+					f.WriteAttributeString("src", Path.Combine(libRoot, string.Format(libPath, "x86_64")));
+					f.WriteAttributeString("target", string.Format("runtimes\\linux-x64\\native\\{0}", lib));
+					f.WriteEndElement(); // file
+
+					gen_nuget_targets_linux(top, tname, string.Format("lib{0}.dylib", what));
+					break;
+				default:
+                    throw new Exception();
+            }
+            f.WriteStartElement("file");
+            f.WriteAttributeString("src", tname);
+            f.WriteAttributeString("target", string.Format("build\\{0}.targets", id));
+            f.WriteEndElement(); // file
+
+            f.WriteEndElement(); // files
+
+            f.WriteEndElement(); // package
+
+            f.WriteEndDocument();
+        }
+    }
+
+    private static void gen_nuspec_e_sqlite3(string top, string root, string plat)
 	{
 		XmlWriterSettings settings = new XmlWriterSettings();
 		settings.Indent = true;
@@ -3580,7 +3779,7 @@ public static class gen
 				if (cfg.area == "test")
 				{
 					write_nuspec_file_entry(
-							cfg, 
+							cfg,
 							f
 							);
 				}
@@ -3656,7 +3855,7 @@ public static class gen
 				if (cfg.area == "ugly")
 				{
 					write_nuspec_file_entry(
-							cfg, 
+							cfg,
 							f
 							);
 				}
@@ -3731,7 +3930,7 @@ public static class gen
 				if (cfg.area == "batteries_winsqlite3" && cfg.env != "wp80")
 				{
 					write_nuspec_file_entry(
-							cfg, 
+							cfg,
 							f
 							);
 				}
@@ -3810,58 +4009,7 @@ public static class gen
             f.WriteEndElement(); // dependency
         }
 
-        if (what == "e_sqlite3")
-        {
-            switch (env_deps)
-            {
-                case "android":
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.android", gen.ROOT_NAME));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-                    break;
-                case "macos":
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.osx", gen.ROOT_NAME));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-                    break;
-                case "ios_unified":
-                case "ios_classic":
-                case "watchos":
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.{1}.static", gen.ROOT_NAME, env_deps));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-                    break;
-                case "net35":
-                case "net40":
-                case "net45":
-                case "netstandard11": // TODO because this is used for netcoreapp, kinda hackish
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.v110_xp", gen.ROOT_NAME));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.osx", gen.ROOT_NAME));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.linux", gen.ROOT_NAME));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-                    break;
-                default:
-                    f.WriteStartElement("dependency");
-                    f.WriteAttributeString("id", string.Format("{0}.lib.e_sqlite3.{1}", gen.ROOT_NAME, projects.cs_env_to_toolset(env_deps)));
-                    f.WriteAttributeString("version", NUSPEC_VERSION);
-                    f.WriteEndElement(); // dependency
-                    break;
-            }
-        }
-        else if (what == "sqlcipher")
+        if (what == "sqlcipher")
         {
             switch (env_deps)
             {
@@ -3907,6 +4055,57 @@ public static class gen
                 default:
                     f.WriteStartElement("dependency");
                     f.WriteAttributeString("id", string.Format("{0}.lib.sqlcipher.{1}", gen.ROOT_NAME, projects.cs_env_to_toolset(env_deps)));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+                    break;
+            }
+        }
+        else
+        {
+            switch (env_deps)
+            {
+                case "android":
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.android", gen.ROOT_NAME, what));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+                    break;
+                case "macos":
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.osx", gen.ROOT_NAME, what));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+                    break;
+                case "ios_unified":
+                case "ios_classic":
+                case "watchos":
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{2}.{1}.static", gen.ROOT_NAME, env_deps, what));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+                    break;
+                case "net35":
+                case "net40":
+                case "net45":
+                case "netstandard11": // TODO because this is used for netcoreapp, kinda hackish
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.windows", gen.ROOT_NAME, what));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.osx", gen.ROOT_NAME, what));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+                    
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{1}.linux", gen.ROOT_NAME, what));
+                    f.WriteAttributeString("version", NUSPEC_VERSION);
+                    f.WriteEndElement(); // dependency
+                    break;
+                default:
+                    f.WriteStartElement("dependency");
+                    f.WriteAttributeString("id", string.Format("{0}.lib.{2}.{1}", gen.ROOT_NAME, projects.cs_env_to_toolset(env_deps), what));
                     f.WriteAttributeString("version", NUSPEC_VERSION);
                     f.WriteEndElement(); // dependency
                     break;
@@ -3958,7 +4157,7 @@ public static class gen
             write_bundle_dependency_group(f, "net40", "sqlcipher");
             write_bundle_dependency_group(f, "net45", "sqlcipher");
             write_bundle_dependency_group(f, "netcoreapp", "netstandard11", "sqlcipher");
-            
+
             write_dependency_group(f, "profile111", DEP_CORE);
             write_dependency_group(f, "profile136", DEP_CORE);
             write_dependency_group(f, "profile259", DEP_CORE);
@@ -3976,7 +4175,7 @@ public static class gen
 				if (cfg.area == "batteries_sqlcipher")
 				{
 					write_nuspec_file_entry(
-							cfg, 
+							cfg,
 							f
 							);
 				}
@@ -3990,7 +4189,81 @@ public static class gen
 		}
 	}
 
-	private static void gen_nuspec_bundle_e_sqlite3(string top)
+    private static void gen_nuspec_bundle(string top, string what)
+    {
+        string id = string.Format("{0}.bundle_{1}", gen.ROOT_NAME, what);
+
+        XmlWriterSettings settings = new XmlWriterSettings();
+        settings.Indent = true;
+        settings.OmitXmlDeclaration = false;
+
+        using (XmlWriter f = XmlWriter.Create(Path.Combine(top, string.Format("{0}.nuspec", id)), settings))
+        {
+            f.WriteStartDocument();
+            f.WriteComment("Automatically generated");
+
+            f.WriteStartElement("package", "http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd");
+
+            f.WriteStartElement("metadata");
+            f.WriteAttributeString("minClientVersion", "2.5"); // TODO 2.8.3 for unified
+
+            f.WriteElementString("id", id);
+            f.WriteElementString("version", NUSPEC_VERSION);
+            f.WriteElementString("title", id);
+            f.WriteElementString("description", "This 'batteries-included' bundle brings in SQLitePCLRaw.core and the necessary stuff for certain common use cases.  Call SQLitePCL.Batteries.Init().  Policy of this bundle: e_sqlite3 included");
+            f.WriteElementString("authors", "Eric Sink");
+            f.WriteElementString("owners", "Eric Sink");
+            f.WriteElementString("copyright", "Copyright 2014-2016 Zumero, LLC");
+            f.WriteElementString("requireLicenseAcceptance", "false");
+            f.WriteElementString("licenseUrl", "https://raw.github.com/ericsink/SQLitePCL.raw/master/LICENSE.TXT");
+            f.WriteElementString("projectUrl", "https://github.com/ericsink/SQLitePCL.raw");
+            f.WriteElementString("releaseNotes", NUSPEC_RELEASE_NOTES);
+            f.WriteElementString("summary", "Batteries-included package to bring in SQLitePCL.raw and dependencies");
+            f.WriteElementString("tags", "sqlite pcl database monotouch ios monodroid android wp8 wpa");
+
+            f.WriteStartElement("dependencies");
+
+            write_bundle_dependency_group(f, "android", what);
+            write_bundle_dependency_group(f, "ios_unified", what);
+            write_bundle_dependency_group(f, "macos", what);
+            // TODO write_bundle_dependency_group(f, "watchos", what);
+            write_bundle_dependency_group(f, "uwp10", what);
+            write_bundle_dependency_group(f, "net45", what);
+            write_bundle_dependency_group(f, "netcoreapp", "netstandard11", what);
+
+            write_dependency_group(f, "netstandard11", DEP_CORE);
+            write_dependency_group(f, null, DEP_CORE);
+
+            f.WriteEndElement(); // dependencies
+
+            f.WriteEndElement(); // metadata
+
+            f.WriteStartElement("files");
+
+            foreach (config_csproj cfg in projects.items_csproj)
+            {
+                if (cfg.area == string.Format("batteries_{0}", what) && cfg.env != "wp80")
+                {
+                    write_nuspec_file_entry(
+                            cfg,
+                            f
+                            );
+                }
+            }
+
+            //var a = projects.items_csproj.Where(cfg => (cfg.area == string.Format("batteries_{0}", what) && cfg.env == "wp80")).ToList();
+
+            //write_cppinterop_with_targets_file(f, a, "wp80", top, id);
+
+            f.WriteEndElement(); // files
+
+            f.WriteEndElement(); // package
+
+            f.WriteEndDocument();
+        }
+    }
+
+    private static void gen_nuspec_bundle_e_sqlite3(string top)
 	{
 		string id = string.Format("{0}.bundle_e_sqlite3", gen.ROOT_NAME);
 
@@ -4037,7 +4310,7 @@ public static class gen
             write_bundle_dependency_group(f, "net40", "e_sqlite3");
             write_bundle_dependency_group(f, "net45", "e_sqlite3");
             write_bundle_dependency_group(f, "netcoreapp", "netstandard11", "e_sqlite3");
-            
+
             write_dependency_group(f, "profile111", DEP_CORE);
             write_dependency_group(f, "profile136", DEP_CORE);
             write_dependency_group(f, "profile259", DEP_CORE);
@@ -4055,7 +4328,7 @@ public static class gen
 				if (cfg.area == "batteries_e_sqlite3" && cfg.env != "wp80")
 				{
 					write_nuspec_file_entry(
-							cfg, 
+							cfg,
 							f
 							);
 				}
@@ -4064,7 +4337,7 @@ public static class gen
             var a = projects.items_csproj.Where(cfg => (cfg.area == "batteries_e_sqlite3" && cfg.env == "wp80")).ToList();
 
             write_cppinterop_with_targets_file(f, a, "wp80", top, id);
-            
+
 			f.WriteEndElement(); // files
 
 			f.WriteEndElement(); // package
@@ -4138,7 +4411,7 @@ public static class gen
 				if (cfg.area == "batteries_green" && cfg.env != "wp80")
 				{
 					write_nuspec_file_entry(
-							cfg, 
+							cfg,
 							f
 							);
 				}
@@ -4282,7 +4555,7 @@ public static class gen
 			f.WriteEndElement(); // Target
 
 			f.WriteStartElement("PropertyGroup");
-			f.WriteElementString("ResolveAssemblyReferencesDependsOn", 
+			f.WriteElementString("ResolveAssemblyReferencesDependsOn",
 					string.Format("$(ResolveAssemblyReferencesDependsOn);InjectReference_{0}", guid));
 			f.WriteEndElement(); // PropertyGroup
 
@@ -4293,7 +4566,62 @@ public static class gen
 		return tname;
 	}
 
-	private static void gen_nuget_targets_windows(string top, string tname, string filename)
+    private static void gen_nuget_targets_windows_uwp(string top, string tname, string filename)
+    {
+        XmlWriterSettings settings = new XmlWriterSettings();
+        settings.Indent = true;
+        settings.OmitXmlDeclaration = false;
+
+        using (XmlWriter f = XmlWriter.Create(Path.Combine(top, tname), settings))
+        {
+            f.WriteStartDocument();
+            f.WriteComment("Automatically generated");
+
+            f.WriteStartElement("Project", "http://schemas.microsoft.com/developer/msbuild/2003");
+            f.WriteAttributeString("ToolsVersion", "4.0");
+
+            var guid = Guid.NewGuid().ToString();
+            f.WriteStartElement("Target");
+            f.WriteAttributeString("Name", string.Format("InjectReference_{0}", guid));
+            f.WriteAttributeString("BeforeTargets", "ResolveAssemblyReferences");
+
+            f.WriteStartElement("ItemGroup");
+            f.WriteAttributeString("Condition", " '$(OS)' == 'Windows_NT' ");
+
+            f.WriteStartElement("Content");
+            f.WriteAttributeString("Include", string.Format("$(MSBuildThisFileDirectory)..\\runtimes\\win10-x86\\native\\{0}", filename));
+            f.WriteElementString("Link", string.Format("{0}\\{1}", "x86", filename));
+            f.WriteElementString("CopyToOutputDirectory", "PreserveNewest");
+            f.WriteEndElement(); // Content
+
+            f.WriteStartElement("Content");
+            f.WriteAttributeString("Include", string.Format("$(MSBuildThisFileDirectory)..\\runtimes\\win10-x64\\native\\{0}", filename));
+            f.WriteElementString("Link", string.Format("{0}\\{1}", "x64", filename));
+            f.WriteElementString("CopyToOutputDirectory", "PreserveNewest");
+            f.WriteEndElement(); // Content
+
+            f.WriteStartElement("Content");
+            f.WriteAttributeString("Include", string.Format("$(MSBuildThisFileDirectory)..\\runtimes\\win10-arm\\native\\{0}", filename));
+            f.WriteElementString("Link", string.Format("{0}\\{1}", "arm", filename));
+            f.WriteElementString("CopyToOutputDirectory", "PreserveNewest");
+            f.WriteEndElement(); // Content
+
+            f.WriteEndElement(); // ItemGroup
+
+            f.WriteEndElement(); // Target
+
+            f.WriteStartElement("PropertyGroup");
+            f.WriteElementString("ResolveAssemblyReferencesDependsOn",
+                    string.Format("$(ResolveAssemblyReferencesDependsOn);InjectReference_{0}", guid));
+            f.WriteEndElement(); // PropertyGroup
+
+            f.WriteEndElement(); // Project
+
+            f.WriteEndDocument();
+        }
+    }
+
+    private static void gen_nuget_targets_windows(string top, string tname, string filename)
 	{
 		XmlWriterSettings settings = new XmlWriterSettings();
 		settings.Indent = true;
@@ -4332,7 +4660,7 @@ public static class gen
 			f.WriteEndElement(); // Target
 
 			f.WriteStartElement("PropertyGroup");
-			f.WriteElementString("ResolveAssemblyReferencesDependsOn", 
+			f.WriteElementString("ResolveAssemblyReferencesDependsOn",
 					string.Format("$(ResolveAssemblyReferencesDependsOn);InjectReference_{0}", guid));
 			f.WriteEndElement(); // PropertyGroup
 
@@ -4375,7 +4703,7 @@ public static class gen
 			f.WriteEndElement(); // Target
 
 			f.WriteStartElement("PropertyGroup");
-			f.WriteElementString("ResolveAssemblyReferencesDependsOn", 
+			f.WriteElementString("ResolveAssemblyReferencesDependsOn",
 					string.Format("$(ResolveAssemblyReferencesDependsOn);InjectReference_{0}", guid));
 			f.WriteEndElement(); // PropertyGroup
 
@@ -4420,7 +4748,7 @@ public static class gen
 			f.WriteEndElement(); // Target
 
 			f.WriteStartElement("PropertyGroup");
-			f.WriteElementString("ResolveAssemblyReferencesDependsOn", 
+			f.WriteElementString("ResolveAssemblyReferencesDependsOn",
 					string.Format("$(ResolveAssemblyReferencesDependsOn);InjectReference_{0}", guid));
 			f.WriteEndElement(); // PropertyGroup
 
@@ -4489,7 +4817,7 @@ public static class gen
 						f.WriteEndElement(); // Message
 						break;
 				}
-				
+
 				f.WriteComment(string.Format("{0}", cfg.get_name()));
 				f.WriteStartElement("ItemGroup");
                 f.WriteAttributeString("Condition", string.Format(" '$(Platform.ToLower())' == '{0}' ", cfg.cpu.ToLower()));
@@ -4590,273 +4918,534 @@ public static class gen
         }
     }
 
-	public static void Main(string[] args)
-	{
-		projects.init();
+    public static class Utils
+    {
+        private static string cs_pinvoke;
+        private static string cs_imp_ios_internal;
+        private static string cs_batteries_v2;
 
-		string root = Directory.GetCurrentDirectory(); // assumes that gen_build.exe is being run from the root directory of the project
-		string top = Path.Combine(root, "bld");
+        public static void WritePinvoke(string root, string top, string what, string simpleDll = null, string actualDll = null)
+        {
+            if (string.IsNullOrEmpty(cs_pinvoke))
+                cs_pinvoke = File.ReadAllText(Path.Combine(root, "src/cs/sqlite3_pinvoke.cs"));
 
-		// --------------------------------
-		// create the bld directory
-		Directory.CreateDirectory(top);
-
-		string cs_pinvoke = File.ReadAllText(Path.Combine(root, "src/cs/sqlite3_pinvoke.cs"));
-		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_sqlite3.cs")))
-		{
-			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "sqlite3");
-			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "sqlite3");
-			tw.Write(cs2);
-		}
-		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_e_sqlite3.cs")))
-		{
-			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "e_sqlite3");
-			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "e_sqlite3");
-			tw.Write(cs2);
-		}
-		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_sqlcipher.cs")))
-		{
-			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "sqlcipher");
-			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "sqlcipher");
-			tw.Write(cs2);
-		}
-		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_custom_sqlite3.cs")))
-		{
-			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "custom_sqlite3");
-			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "custom_sqlite3");
-			tw.Write(cs2);
-		}
-		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_winsqlite3.cs")))
-		{
-			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "winsqlite3");
-			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "winsqlite3");
-			tw.Write(cs2);
-		}
-		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_sqlite3_xamarin.cs")))
-		{
-			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "sqlite3_xamarin");
-			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "sqlite3_xamarin");
-			tw.Write(cs2);
-		}
-		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_ios_internal.cs")))
-		{
-			string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "internal");
-			string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "__Internal");
-			tw.Write(cs2);
-		}
-
-		// --------------------------------
-		// assign all the guids
-
-		foreach (config_sqlite3 cfg in projects.items_sqlite3)
-		{
-			cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
-		}
-
-		foreach (config_cppinterop cfg in projects.items_cppinterop)
-		{
-			cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
-		}
-
-		foreach (config_csproj cfg in projects.items_csproj)
-		{
-			cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
-		}
-
-		foreach (config_csproj cfg in projects.items_test)
-		{
-			cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
-		}
-
-		foreach (config_testapp cfg in projects.items_testapp)
-		{
-			cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
-		}
-
-		// --------------------------------
-		// generate all the AssemblyInfo files
-
-		foreach (config_csproj cfg in projects.items_csproj)
-		{
-			gen_assemblyinfo(cfg, root, top);
-		}
-
-		foreach (config_csproj cfg in projects.items_test)
-		{
-			gen_assemblyinfo(cfg, root, top);
-		}
-
-		// --------------------------------
-		// generate all the project files
-
-		foreach (config_sqlite3 cfg in projects.items_sqlite3)
-		{
-			gen_sqlite3(cfg, root, top);
-		}
-
-		foreach (config_cppinterop cfg in projects.items_cppinterop)
-		{
-			gen_cppinterop(cfg, root, top);
-		}
-
-		foreach (config_csproj cfg in projects.items_csproj)
-		{
-			gen_csproj(cfg, root, top);
-		}
-
-		foreach (config_csproj cfg in projects.items_test)
-		{
-			gen_csproj(cfg, root, top);
-		}
-
-		foreach (config_testapp cfg in projects.items_testapp)
-		{
-			gen_testapp(cfg, root);
-		}
-
-		// --------------------------------
-
-		gen_solution(top);
-		gen_testapp_solution(top, projects.items_testapp);
-		gen_test_solution(top);
-
-		// --------------------------------
-
-        gen_nuspec_core(top, root);
-        gen_nuspec_ugly(top);
-        gen_nuspec_bundle_green(top);
-        gen_nuspec_bundle_e_sqlite3(top);
-        gen_nuspec_bundle_winsqlite3(top);
-        gen_nuspec_bundle_sqlcipher(top);
-        gen_nuspec_provider_wp80(top, root, "e_sqlite3");
-        gen_nuspec_tests(top);
-
-		foreach (config_csproj cfg in projects.items_csproj)
-		{
-            if (cfg.area == "provider" && cfg.env != "wp80")
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, string.Format("pinvoke_{0}.cs", what))))
             {
-                gen_nuspec_provider(top, root, cfg);
+                string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", simpleDll ?? what);
+                string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", actualDll ?? what);
+                tw.Write(cs2);
             }
-		}
+        }
 
-		foreach (config_csproj cfg in projects.items_csproj)
-		{
-            if (cfg.area == "lib")
+        public static void WriteImpIosInternal(string root, string top, string what)
+        {
+            if (string.IsNullOrEmpty(cs_imp_ios_internal))
+                cs_imp_ios_internal = File.ReadAllText(Path.Combine(root, "src/cs/imp_ios_internal.cs"));
+
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, string.Format("imp_ios_internal_{0}.cs", what))))
             {
-                gen_nuspec_embedded(top, root, cfg);
+                string cs1 = cs_imp_ios_internal.Replace("WHAT", what);
+                tw.Write(cs1);
             }
-		}
+        }
 
-		foreach (config_esqlite3 cfg in projects.items_esqlite3)
-		{
-			gen_nuspec_esqlite3(top, root, cfg);
-		}
+        public static void WriteBatteriesV2(string root, string top, string what)
+        {
+            if (string.IsNullOrEmpty(cs_batteries_v2))
+                cs_batteries_v2 = File.ReadAllText(Path.Combine(root, "src/cs/batteries_v2.cs"));
 
-		gen_nuspec_e_sqlite3(top, root, "osx");
-		gen_nuspec_e_sqlite3(top, root, "linux");
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, string.Format("batteries_v2_{0}.cs", what))))
+            {
+                string cs1 = cs_batteries_v2.Replace("WHAT", what);
+                tw.Write(cs1);
+            }
+        }
+    }
 
-		gen_nuspec_sqlcipher(top, root, "windows");
-		gen_nuspec_sqlcipher(top, root, "osx");
-		gen_nuspec_sqlcipher(top, root, "linux");
+    public class CustomBuild
+    {
+        public CustomBuild(string what, string libRoot, string libPattern)
+        {
+            this.what = what;
+            this.libRoot = libRoot;
+            this.libPattern = libPattern;
 
-		using (TextWriter tw = new StreamWriter(Path.Combine(top, "build.ps1")))
-		{
-			tw.WriteLine("../../nuget restore sqlitepcl.sln");
-			tw.WriteLine("msbuild /p:Configuration=Release sqlitepcl.sln");
-		}
+            init_csproj();
+        }
 
-		using (TextWriter tw = new StreamWriter(Path.Combine(top, "pack.ps1")))
-		{
-            tw.WriteLine("../../nuget pack {0}.core.nuspec", gen.ROOT_NAME);
-            tw.WriteLine("../../nuget pack {0}.ugly.nuspec", gen.ROOT_NAME);
-            tw.WriteLine("../../nuget pack {0}.bundle_green.nuspec", gen.ROOT_NAME);
-            tw.WriteLine("../../nuget pack {0}.bundle_e_sqlite3.nuspec", gen.ROOT_NAME);
-            tw.WriteLine("../../nuget pack {0}.bundle_sqlcipher.nuspec", gen.ROOT_NAME);
-            tw.WriteLine("../../nuget pack {0}.bundle_winsqlite3.nuspec", gen.ROOT_NAME);
-            tw.WriteLine("../../nuget pack {0}.provider.e_sqlite3.wp80.nuspec", gen.ROOT_NAME);
-            tw.WriteLine("../../nuget pack {0}.tests.nuspec", gen.ROOT_NAME);
+        public string what { get; set; }
+        public string libRoot { get; set; }
+        public string libPattern { get; set; }
+        public List<config_csproj> items_csproj { get;set; }
 
-			tw.WriteLine("../../nuget pack {0}.lib.e_sqlite3.osx.nuspec", gen.ROOT_NAME);
-			tw.WriteLine("../../nuget pack {0}.lib.e_sqlite3.linux.nuspec", gen.ROOT_NAME);
+        private void init_csproj()
+        {
+            items_csproj = new List<config_csproj>();
+            items_csproj.Add(config_csproj.create_core("netstandard11"));
 
-			tw.WriteLine("../../nuget pack {0}.lib.sqlcipher.windows.nuspec", gen.ROOT_NAME);
-			tw.WriteLine("../../nuget pack {0}.lib.sqlcipher.osx.nuspec", gen.ROOT_NAME);
-			tw.WriteLine("../../nuget pack {0}.lib.sqlcipher.linux.nuspec", gen.ROOT_NAME);
+            items_csproj.Add(config_csproj.create_provider(what, "netstandard11"));
+            items_csproj.Add(config_csproj.create_provider(what, "net45"));
+            items_csproj.Add(config_csproj.create_provider(what, "macos"));
+            items_csproj.Add(config_csproj.create_provider(what, "android"));
+            items_csproj.Add(config_csproj.create_provider(what, "uwp10"));
+            items_csproj.Add(config_csproj.create_provider("internal", "ios_unified"));
+
+            if (libRoot != null)
+            {
+                items_csproj.Add(config_csproj.create_embedded(what, "android"));
+                items_csproj.Add(config_csproj.create_embedded(what, "ios_unified"));
+
+                // bundle_custom
+                var batteriesArea = string.Format("batteries_{0}", what);
+                var ver = 2;
+
+                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "android", what));
+                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "macos", what));
+                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "uwp10", what));
+                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "net45", what));
+                items_csproj.Add(config_csproj.create_internal_batteries(batteriesArea, ver, "ios_unified", what));
+                // TODO items_csproj.Add(config_csproj.create_internal_batteries(area, "watchos", what));
+
+                // the following item builds for netstandard11 
+                // but overrides the nuget target env to place it in netcoreapp
+
+                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "netstandard11", what, "netcoreapp"));
+                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "netstandard11", null));
+//                items_csproj.Add(config_csproj.create_batteries(batteriesArea, ver, "profile111", null));
+            }
+
+            foreach (config_csproj cfg in items_csproj)
+            {
+                cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+            }
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        projects.init();
+
+        string root = Directory.GetCurrentDirectory(); // assumes that gen_build.exe is being run from the root directory of the project
+        string top = Path.Combine(root, "bld");
+
+        // --------------------------------
+        // create the bld directory
+        Directory.CreateDirectory(top);
+
+        if (args.Length > 0)                                        // custom build args { what, libRoot, libPattern }
+        {
+            string what = args[0];
+            string libRoot = args.Length > 1 ? args[1] : null;      // skip bundling if libRoot is not provided
+            string libPattern = args.Length > 2 ? args[2] : "$which\\lib\\$platform\\$arch\\$lib"; //string.Format("$which\\$platform\\$arch\\lib\\$lib");
+
+            var customBuild = new CustomBuild(what, libRoot, libPattern);
+
+            projects.items_sqlite3.Clear();
+            projects.items_cppinterop.Clear();
+            projects.items_csproj = customBuild.items_csproj;
+            projects.items_test.Clear();
+            projects.items_esqlite3.Clear();
+            projects.items_testapp.Clear();
+
+            // e.g., generates pinvoke_custom_sqlite3.cs
+            Utils.WritePinvoke(root, top, customBuild.what);
+            Utils.WritePinvoke(root, top, "ios_internal", "internal", "__Internal");
+            Utils.WriteImpIosInternal(root, top, customBuild.what);
+            Utils.WriteBatteriesV2(root, top, customBuild.what);
+
+            // --------------------------------
+            // generate all the AssemblyInfo files
+
+            foreach (config_csproj cfg in projects.items_csproj)
+            {
+                gen_assemblyinfo(cfg, root, top);
+            }
+
+            // --------------------------------
+            // generate all the project files
+
+            foreach (config_csproj cfg in projects.items_csproj)
+            {
+                switch (cfg.area)
+                {
+                    case "lib":
+                        switch (cfg.env)
+                        {
+                            case "ios_unified":
+                                // need to pass list of libs and whichs :P or -gccflags?
+                                gen_csproj(cfg, root, top, customBuild.libRoot, customBuild.libPattern);
+                                break;
+                            case "android":
+                                gen_csproj(cfg, root, top, customBuild.libRoot, customBuild.libPattern);
+                                break;
+                        }
+                        break;
+                    default:
+                        gen_csproj(cfg, root, top);
+                        break;
+                }
+            }
+
+            // --------------------------------
+
+            gen_solution(top);
+
+
+            gen_nuspec_core(top, root);
+            gen_nuspec_bundle(top, what);
+
+            gen_nuspec(top, root, "windows", customBuild.what, customBuild.libRoot, customBuild.libPattern);
+            gen_nuspec(top, root, "v140", customBuild.what, customBuild.libRoot, customBuild.libPattern);
+            gen_nuspec(top, root, "osx", customBuild.what, customBuild.libRoot, customBuild.libPattern);
+			gen_nuspec(top, root, "linux", customBuild.what, customBuild.libRoot, customBuild.libPattern);
 
 			foreach (config_csproj cfg in projects.items_csproj)
-			{
+            {
                 if (cfg.area == "provider" && cfg.env != "wp80")
                 {
-                    string id = cfg.get_id();
-                    tw.WriteLine("../../nuget pack {0}.nuspec", id);
+                    gen_nuspec_provider(top, root, cfg);
                 }
-			}
-			foreach (config_csproj cfg in projects.items_csproj)
-			{
+            }
+
+            foreach (config_csproj cfg in projects.items_csproj)
+            {
                 if (cfg.area == "lib")
                 {
-                    string id = cfg.get_id();
-                    tw.WriteLine("../../nuget pack {0}.nuspec", id);
+                    gen_nuspec_embedded(top, root, cfg);
                 }
-			}
-			foreach (config_esqlite3 cfg in projects.items_esqlite3)
-			{
-				string id = cfg.get_id();
-				tw.WriteLine("../../nuget pack {0}.nuspec", id);
-			}
-			tw.WriteLine("ls *.nupkg");
-		}
+            }
 
-		using (TextWriter tw = new StreamWriter(Path.Combine(top, "bt.ps1")))
-		{
-            string vtests = string.Format("Tests_{0}", NUSPEC_VERSION);
-			tw.WriteLine("cd ../{0}", vtests);
-			tw.WriteLine("../../nuget restore -Source '{0}' -Source https://www.nuget.org/api/v2 ./testapps.sln", top);
-		}
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "build.ps1")))
+            {
+                tw.WriteLine("if (Get-Command \"../../nuget\" -ErrorAction SilentlyContinue) {");
+                tw.WriteLine("	$NUGET = \"../../nuget\"");
+                tw.WriteLine("} elseif (Get-Command \"nuget\") {");
+                tw.WriteLine("	$NUGET = \"nuget\"");
+                tw.WriteLine("}");
 
-		using (TextWriter tw = new StreamWriter(Path.Combine(top, "push.ps1")))
-		{
-            const string src = "https://www.nuget.org/api/v2/package";
+                tw.WriteLine("Invoke-Expression \"$NUGET restore sqlitepcl.sln\"");
+                tw.WriteLine("msbuild /p:Configuration=Release sqlitepcl.sln");
+            }
 
-			tw.WriteLine("ls *.nupkg");
-			tw.WriteLine("../../nuget push -Source {2} {0}.core.{1}.nupkg", gen.ROOT_NAME, NUSPEC_VERSION, src);
-			tw.WriteLine("../../nuget push -Source {2} {0}.ugly.{1}.nupkg", gen.ROOT_NAME, NUSPEC_VERSION, src);
-			tw.WriteLine("../../nuget push -Source {2} {0}.bundle_green.{1}.nupkg", gen.ROOT_NAME, NUSPEC_VERSION, src);
-			tw.WriteLine("../../nuget push -Source {2} {0}.bundle_e_sqlite3.{1}.nupkg", gen.ROOT_NAME, NUSPEC_VERSION, src);
-			tw.WriteLine("../../nuget push -Source {2} {0}.bundle_sqlcipher.{1}.nupkg", gen.ROOT_NAME, NUSPEC_VERSION, src);
-			tw.WriteLine("../../nuget push -Source {2} {0}.bundle_winsqlite3.{1}.nupkg", gen.ROOT_NAME, NUSPEC_VERSION, src);
-			tw.WriteLine("../../nuget push -Source {2} {0}.provider.e_sqlite3.wp80.{1}.nupkg", gen.ROOT_NAME, NUSPEC_VERSION, src);
-			tw.WriteLine("#../../nuget push -Source {2} {0}.tests.{1}.nupkg", gen.ROOT_NAME, NUSPEC_VERSION, src);
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "pack.ps1")))
+            {
+                tw.WriteLine("if (Get-Command \"../../nuget\" -ErrorAction SilentlyContinue) {");
+                tw.WriteLine("	$NUGET = \"../../nuget\"");
+                tw.WriteLine("} elseif (Get-Command \"nuget\") {");
+                tw.WriteLine("	$NUGET = \"nuget\"");
+                tw.WriteLine("}");
 
-			tw.WriteLine("../../nuget push -Source {2} {0}.lib.e_sqlite3.osx.{1}.nupkg", gen.ROOT_NAME, NUSPEC_VERSION, src);
-			tw.WriteLine("../../nuget push -Source {2} {0}.lib.e_sqlite3.linux.{1}.nupkg", gen.ROOT_NAME, NUSPEC_VERSION, src);
+                string pack_flags = "-verbose";
 
-			tw.WriteLine("../../nuget push -Source {2} {0}.lib.sqlcipher.windows.{1}.nupkg", gen.ROOT_NAME, NUSPEC_VERSION, src);
-			tw.WriteLine("../../nuget push -Source {2} {0}.lib.sqlcipher.osx.{1}.nupkg", gen.ROOT_NAME, NUSPEC_VERSION, src);
-			tw.WriteLine("../../nuget push -Source {2} {0}.lib.sqlcipher.linux.{1}.nupkg", gen.ROOT_NAME, NUSPEC_VERSION, src);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.core.nuspec {1}\"", gen.ROOT_NAME, pack_flags);
 
-			foreach (config_csproj cfg in projects.items_csproj)
-			{
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.windows.nuspec {2}\"", gen.ROOT_NAME, customBuild.what, pack_flags);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.osx.nuspec {2}\"", gen.ROOT_NAME, customBuild.what, pack_flags);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.{1}.linux.nuspec\"", gen.ROOT_NAME, customBuild.what);
+
+                foreach (config_csproj cfg in projects.items_csproj)
+                {
+                    if (cfg.area == "provider" && cfg.env != "wp80")
+                    {
+                        string id = cfg.get_id();
+                        tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec {1}\"", id, pack_flags);
+                    }
+                }
+                foreach (config_csproj cfg in projects.items_csproj)
+                {
+                    if (cfg.area == "lib")
+                    {
+                        string id = cfg.get_id();
+                        tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec {1}\"", id, pack_flags);
+                    }
+                }
+
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_{1}.nuspec {2}\"", gen.ROOT_NAME, customBuild.what, pack_flags);
+
+            }
+        }
+        else
+        {
+            string cs_pinvoke = File.ReadAllText(Path.Combine(root, "src/cs/sqlite3_pinvoke.cs"));
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_sqlite3.cs")))
+            {
+                string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "sqlite3");
+                string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "sqlite3");
+                tw.Write(cs2);
+            }
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_e_sqlite3.cs")))
+            {
+                string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "e_sqlite3");
+                string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "e_sqlite3");
+                tw.Write(cs2);
+            }
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_sqlcipher.cs")))
+            {
+                string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "sqlcipher");
+                string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "sqlcipher");
+                tw.Write(cs2);
+            }
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_custom_sqlite3.cs")))
+            {
+                string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "custom_sqlite3");
+                string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "custom_sqlite3");
+                tw.Write(cs2);
+            }
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_winsqlite3.cs")))
+            {
+                string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "winsqlite3");
+                string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "winsqlite3");
+                tw.Write(cs2);
+            }
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_sqlite3_xamarin.cs")))
+            {
+                string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "sqlite3_xamarin");
+                string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "sqlite3_xamarin");
+                tw.Write(cs2);
+            }
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "pinvoke_ios_internal.cs")))
+            {
+                string cs1 = cs_pinvoke.Replace("REPLACE_WITH_SIMPLE_DLL_NAME", "internal");
+                string cs2 = cs1.Replace("REPLACE_WITH_ACTUAL_DLL_NAME", "__Internal");
+                tw.Write(cs2);
+            }
+
+            // --------------------------------
+            // assign all the guids
+
+            foreach (config_sqlite3 cfg in projects.items_sqlite3)
+            {
+                cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+            }
+
+            foreach (config_cppinterop cfg in projects.items_cppinterop)
+            {
+                cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+            }
+
+            foreach (config_csproj cfg in projects.items_csproj)
+            {
+                cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+            }
+
+            foreach (config_csproj cfg in projects.items_test)
+            {
+                cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+            }
+
+            foreach (config_testapp cfg in projects.items_testapp)
+            {
+                cfg.guid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+            }
+
+            // --------------------------------
+            // generate all the AssemblyInfo files
+
+            foreach (config_csproj cfg in projects.items_csproj)
+            {
+                gen_assemblyinfo(cfg, root, top);
+            }
+
+            foreach (config_csproj cfg in projects.items_test)
+            {
+                gen_assemblyinfo(cfg, root, top);
+            }
+
+            // --------------------------------
+            // generate all the project files
+
+            foreach (config_sqlite3 cfg in projects.items_sqlite3)
+            {
+                gen_sqlite3(cfg, root, top);
+            }
+
+            foreach (config_cppinterop cfg in projects.items_cppinterop)
+            {
+                gen_cppinterop(cfg, root, top);
+            }
+
+            foreach (config_csproj cfg in projects.items_csproj)
+            {
+                gen_csproj(cfg, root, top);
+            }
+
+            foreach (config_csproj cfg in projects.items_test)
+            {
+                gen_csproj(cfg, root, top);
+            }
+
+            foreach (config_testapp cfg in projects.items_testapp)
+            {
+                gen_testapp(cfg, root);
+            }
+
+            // --------------------------------
+
+            gen_solution(top);
+            gen_testapp_solution(top, projects.items_testapp);
+            gen_test_solution(top);
+
+            // --------------------------------
+
+            gen_nuspec_core(top, root);
+            gen_nuspec_ugly(top);
+            gen_nuspec_bundle_green(top);
+            gen_nuspec_bundle_e_sqlite3(top);
+            gen_nuspec_bundle_winsqlite3(top);
+            gen_nuspec_bundle_sqlcipher(top);
+            gen_nuspec_provider_wp80(top, root, "e_sqlite3");
+            gen_nuspec_tests(top);
+
+            foreach (config_csproj cfg in projects.items_csproj)
+            {
                 if (cfg.area == "provider" && cfg.env != "wp80")
                 {
-                    string id = cfg.get_id();
-                    tw.WriteLine("../../nuget push -Source {2} {0}.{1}.nupkg", id, NUSPEC_VERSION, src);
+                    gen_nuspec_provider(top, root, cfg);
                 }
-			}
-			foreach (config_csproj cfg in projects.items_csproj)
-			{
+            }
+
+            foreach (config_csproj cfg in projects.items_csproj)
+            {
                 if (cfg.area == "lib")
                 {
-                    string id = cfg.get_id();
-                    tw.WriteLine("../../nuget push -Source {2} {0}.{1}.nupkg", id, NUSPEC_VERSION, src);
+                    gen_nuspec_embedded(top, root, cfg);
                 }
-			}
-			foreach (config_esqlite3 cfg in projects.items_esqlite3)
-			{
-				string id = cfg.get_id();
-				tw.WriteLine("../../nuget push -Source {2} {0}.{1}.nupkg", id, NUSPEC_VERSION, src);
-			}
-		}
-	}
+            }
+
+            foreach (config_esqlite3 cfg in projects.items_esqlite3)
+            {
+                gen_nuspec_esqlite3(top, root, cfg);
+            }
+
+            gen_nuspec_e_sqlite3(top, root, "osx");
+            gen_nuspec_e_sqlite3(top, root, "linux");
+
+            gen_nuspec_sqlcipher(top, root, "windows");
+            gen_nuspec_sqlcipher(top, root, "osx");
+            gen_nuspec_sqlcipher(top, root, "linux");
+
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "build.ps1")))
+            {
+                tw.WriteLine("if (Get-Command \"../../nuget\" -ErrorAction SilentlyContinue) {");
+                tw.WriteLine("	$NUGET = \"../../nuget\"");
+                tw.WriteLine("} elseif (Get-Command \"nuget\") {");
+                tw.WriteLine("	$NUGET = \"nuget\"");
+                tw.WriteLine("}");
+
+                tw.WriteLine("Invoke-Expression \"$NUGET restore sqlitepcl.sln\"");
+                tw.WriteLine("msbuild /p:Configuration=Release sqlitepcl.sln");
+            }
+
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "pack.ps1")))
+            {
+                tw.WriteLine("if (Get-Command \"../../nuget\" -ErrorAction SilentlyContinue) {");
+                tw.WriteLine("	$NUGET = \"../../nuget\"");
+                tw.WriteLine("} elseif (Get-Command \"nuget\") {");
+                tw.WriteLine("	$NUGET = \"nuget\"");
+                tw.WriteLine("}");
+
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.core.nuspec\"", gen.ROOT_NAME);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.ugly.nuspec\"", gen.ROOT_NAME);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_green.nuspec\"", gen.ROOT_NAME);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_e_sqlite3.nuspec\"", gen.ROOT_NAME);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_sqlcipher.nuspec\"", gen.ROOT_NAME);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.bundle_winsqlite3.nuspec\"", gen.ROOT_NAME);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.provider.e_sqlite3.wp80.nuspec\"", gen.ROOT_NAME);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.tests.nuspec\"", gen.ROOT_NAME);
+
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.e_sqlite3.osx.nuspec\"", gen.ROOT_NAME);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.e_sqlite3.linux.nuspec\"", gen.ROOT_NAME);
+
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.sqlcipher.windows.nuspec\"", gen.ROOT_NAME);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.sqlcipher.osx.nuspec\"", gen.ROOT_NAME);
+                tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.lib.sqlcipher.linux.nuspec\"", gen.ROOT_NAME);
+
+                foreach (config_csproj cfg in projects.items_csproj)
+                {
+                    if (cfg.area == "provider" && cfg.env != "wp80")
+                    {
+                        string id = cfg.get_id();
+                        tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec\"", id);
+                    }
+                }
+                foreach (config_csproj cfg in projects.items_csproj)
+                {
+                    if (cfg.area == "lib")
+                    {
+                        string id = cfg.get_id();
+                        tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec\"", id);
+                    }
+                }
+                foreach (config_esqlite3 cfg in projects.items_esqlite3)
+                {
+                    string id = cfg.get_id();
+                    tw.WriteLine("Invoke-Expression \"$NUGET pack {0}.nuspec\"", id);
+                }
+                tw.WriteLine("ls *.nupkg");
+            }
+
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "bt.ps1")))
+            {
+                tw.WriteLine("if (Get-Command \"../../nuget\" -ErrorAction SilentlyContinue) {");
+                tw.WriteLine("	$NUGET = \"../../nuget\"");
+                tw.WriteLine("} elseif (Get-Command \"nuget\") {");
+                tw.WriteLine("	$NUGET = \"nuget\"");
+                tw.WriteLine("}");
+
+                string vtests = string.Format("Tests_{0}", NUSPEC_VERSION);
+                tw.WriteLine("cd ../{0}", vtests);
+                tw.WriteLine("Invoke-Expression \"$NUGET restore -Source '{0}' -Source https://www.nuget.org/api/v2 ./testapps.sln\"", top);
+            }
+
+            using (TextWriter tw = new StreamWriter(Path.Combine(top, "push.ps1")))
+            {
+                const string src = "https://www.nuget.org/api/v2/package";
+
+                tw.WriteLine("if (Get-Command \"../../nuget\" -ErrorAction SilentlyContinue) {");
+                tw.WriteLine("	$NUGET = \"../../nuget\"");
+                tw.WriteLine("} elseif (Get-Command \"nuget\") {");
+                tw.WriteLine("	$NUGET = \"nuget\"");
+                tw.WriteLine("}");
+
+                tw.WriteLine("ls *.nupkg");
+                tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.core.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+                tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.ugly.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+                tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.bundle_green.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+                tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.bundle_e_sqlite3.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+                tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.bundle_sqlcipher.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+                tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.bundle_winsqlite3.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+                tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.provider.e_sqlite3.wp80.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+                tw.WriteLine("#Invoke-Expression \"$NUGET push -Source {2} {0}.tests.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+
+                tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.lib.e_sqlite3.osx.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+                tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.lib.e_sqlite3.linux.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+
+                tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.lib.sqlcipher.windows.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+                tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.lib.sqlcipher.osx.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+                tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.lib.sqlcipher.linux.{1}.nupkg\"", gen.ROOT_NAME, NUSPEC_VERSION, src);
+
+                foreach (config_csproj cfg in projects.items_csproj)
+                {
+                    if (cfg.area == "provider" && cfg.env != "wp80")
+                    {
+                        string id = cfg.get_id();
+                        tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.{1}.nupkg\"", id, NUSPEC_VERSION, src);
+                    }
+                }
+                foreach (config_csproj cfg in projects.items_csproj)
+                {
+                    if (cfg.area == "lib")
+                    {
+                        string id = cfg.get_id();
+                        tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.{1}.nupkg\"", id, NUSPEC_VERSION, src);
+                    }
+                }
+                foreach (config_esqlite3 cfg in projects.items_esqlite3)
+                {
+                    string id = cfg.get_id();
+                    tw.WriteLine("Invoke-Expression \"$NUGET push -Source {2} {0}.{1}.nupkg\"", id, NUSPEC_VERSION, src);
+                }
+            }
+        }
+    }
 }
-

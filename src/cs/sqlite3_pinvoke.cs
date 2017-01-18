@@ -142,6 +142,16 @@ namespace SQLitePCL
         {
             NativeMethods.sqlite3_interrupt(db);
         }
+        
+        void ISQLite3Provider.sqlite3_activate_cerod(byte[] passPhrase)
+        {
+            NativeMethods.sqlite3_activate_cerod(passPhrase);
+        }
+        
+        void ISQLite3Provider.sqlite3_activate_see(byte[] passPhrase)
+        {
+            NativeMethods.sqlite3_activate_see(passPhrase);
+        }
 
 #if PLATFORM_IOS || PLATFORM_UNIFIED
         [MonoPInvokeCallback (typeof(NativeMethods.callback_exec))] // TODO not xplat
@@ -1276,6 +1286,12 @@ namespace SQLitePCL
 #endif
 
         }
+
+            [DllImport(SQLITE_DLL, ExactSpelling=true, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void sqlite3_activate_cerod(byte[] passPhrase);
+
+            [DllImport(SQLITE_DLL, ExactSpelling=true, CallingConvention = CallingConvention.Cdecl)]
+            public static extern void sqlite3_activate_see(byte[] passPhrase);
 
             [DllImport(SQLITE_DLL, ExactSpelling=true, CallingConvention = CallingConvention.Cdecl)]
             public static extern int sqlite3_close(IntPtr db);

@@ -14,3 +14,7 @@ project.lock.json
 /bld
 /gen_build.exe
 
+bin
+obj
+Tests_*
+bld_*
