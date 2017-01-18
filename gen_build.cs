@@ -3425,7 +3425,7 @@ public static class gen
         settings.Indent = true;
         settings.OmitXmlDeclaration = false;
 
-        string id = string.Format("SQLitePCLRaw.lib.{1}.{0}", plat, what);
+        string id = string.Format("{2}.lib.{1}.{0}", plat, what, ROOT_NAME);
         using (XmlWriter f = XmlWriter.Create(Path.Combine(top, string.Format("{0}.nuspec", id)), settings))
         {
             f.WriteStartDocument();
