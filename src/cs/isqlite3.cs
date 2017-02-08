@@ -85,8 +85,8 @@ namespace SQLitePCL
     /// </summary>
     public interface ISQLite3Provider
     {
-        void sqlite3_activate_cerod(byte[] passPhrase);
-        void sqlite3_activate_see(byte[] passPhrase);
+        void sqlite3_activate_cerod(string passPhrase);
+        void sqlite3_activate_see(string passPhrase);
         int sqlite3_open(string filename, out IntPtr db);
         int sqlite3_open_v2(string filename, out IntPtr db, int flags, string vfs);
         int sqlite3_close_v2(IntPtr db); /* 3.7.14+ */
