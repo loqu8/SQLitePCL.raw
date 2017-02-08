@@ -40,12 +40,12 @@ namespace SQLitePCL
         {
         }
 
-        void ISQLite3Provider.sqlite3_activate_cerod(byte[] passPhrase)
+        void ISQLite3Provider.sqlite3_activate_cerod(string passPhrase)
         {
 	    throw new Exception(GRIPE);
         }
 
-        void ISQLite3Provider.sqlite3_activate_see(byte[] passPhrase)
+        void ISQLite3Provider.sqlite3_activate_see(string passPhrase)
         {
 	    throw new Exception(GRIPE);
         }

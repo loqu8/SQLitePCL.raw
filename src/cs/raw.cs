@@ -271,12 +271,12 @@ namespace SQLitePCL
         public const int SQLITE_DENY   = 1;   /* Abort the SQL statement with an error */
         public const int SQLITE_IGNORE = 2;   /* Don't allow access, but don't generate an error */
 
-        static public void sqlite3_activate_cerod(byte[] passPhrase)
+        static public void sqlite3_activate_cerod(string passPhrase)
         {
             _imp.sqlite3_activate_cerod(passPhrase);
         }
 
-        static public void sqlite3_activate_see(byte[] passPhrase)
+        static public void sqlite3_activate_see(string passPhrase)
         {
             _imp.sqlite3_activate_see(passPhrase);
         }

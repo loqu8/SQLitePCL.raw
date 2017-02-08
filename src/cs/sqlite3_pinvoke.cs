@@ -143,14 +143,14 @@ namespace SQLitePCL
             NativeMethods.sqlite3_interrupt(db);
         }
         
-        void ISQLite3Provider.sqlite3_activate_cerod(byte[] passPhrase)
+        void ISQLite3Provider.sqlite3_activate_cerod(string passPhrase)
         {
-            NativeMethods.sqlite3_activate_cerod(passPhrase);
+            NativeMethods.sqlite3_activate_cerod(util.to_utf8(passPhrase));
         }
         
-        void ISQLite3Provider.sqlite3_activate_see(byte[] passPhrase)
+        void ISQLite3Provider.sqlite3_activate_see(string passPhrase)
         {
-            NativeMethods.sqlite3_activate_see(passPhrase);
+            NativeMethods.sqlite3_activate_see(util.to_utf8(passPhrase));
         }
 
 #if PLATFORM_IOS || PLATFORM_UNIFIED
