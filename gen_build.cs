@@ -2326,7 +2326,13 @@ public static class gen
 
         string old_csproj = Path.Combine(root, vtests, cfg.name, string.Format("{0}.csproj", cfg.pattern));
         string csproj = Path.Combine(root, vtests, cfg.name, string.Format("{0}.csproj", cfg.name));
-        File.Move(old_csproj, csproj);
+        try {
+        	File.Move(old_csproj, csproj);
+        } catch (System.IO.IOException e) {
+			if (!e.Message.Contains("ERROR_ALREADY_EXISTS")) { 
+				throw e;
+			}
+		}
         string project_dot_json = Path.Combine(root, vtests, cfg.name, "project.json");
 
         replace(csproj, cfg.pattern, cfg.name);
@@ -3030,7 +3036,11 @@ public static class gen
 		{
 			f.WriteStartElement("file");
 			f.WriteAttributeString("src", s);
-			f.WriteAttributeString("target", projects.get_nuget_target_path(target_env));
+			try {
+				f.WriteAttributeString("target", projects.get_nuget_target_path(target_env));
+			} catch (Exception e) {
+				// lol skip wp80
+			}
 			f.WriteEndElement(); // file
 		}
 	}
@@ -3557,6 +3567,9 @@ public static class gen
         }
     }
 
+	const string NUGET_OSX_X_SQLITE_DYLIB = "~/.nuget/packages/Loqu8.SQLitePCLRaw.lib.xsqlite3.osx/1.1.3/runtimes/osx-x64/native/{0}";
+	static readonly bool NUSPEC_X_SQLITE_USE_HOME_NUGET_PATH = true;
+
     private static void gen_nuspec_e_sqlite3(string top, string root, string plat)
 	{
 		XmlWriterSettings settings = new XmlWriterSettings();
@@ -3598,9 +3611,18 @@ public static class gen
                 case "osx":
                     f.WriteStartElement("file");
                     f.WriteAttributeString("src", Path.Combine(root, "apple", "libs", "mac", "sqlite3", "libe_sqlite3.dylib"));
-                    f.WriteAttributeString("target", "runtimes\\osx-x64\\native\\libe_sqlite3.dylib");
-                    f.WriteEndElement(); // file
-                    gen_nuget_targets_osx(top, tname, "libe_sqlite3.dylib");
+                    
+                    string fname = string.Empty;
+                    
+					if (NUSPEC_X_SQLITE_USE_HOME_NUGET_PATH) {
+						fname = "libxsqlite3.dylib";
+                    	f.WriteAttributeString("target", string.Format(NUGET_OSX_X_SQLITE_DYLIB, "libxsqlite3.dylib"));
+					} else {
+						fname = "libe_sqlite3.dylib";
+                    	f.WriteAttributeString("target", "runtimes\\osx-x64\\native\\libe_sqlite3.dylib");
+                    }
+					f.WriteEndElement(); // file
+                    gen_nuget_targets_osx(top, tname, fname);
                     break;
                 case "linux":
                     f.WriteStartElement("file");
@@ -4691,12 +4713,20 @@ public static class gen
 
 			f.WriteStartElement("ItemGroup");
 			f.WriteAttributeString("Condition", " '$(OS)' == 'Unix' AND Exists('/Library/Frameworks') ");
-
-			f.WriteStartElement("Content");
-			f.WriteAttributeString("Include", string.Format("$(MSBuildThisFileDirectory)..\\runtimes\\osx-x64\\native\\{0}", filename));
-			f.WriteElementString("Link", filename);
-			f.WriteElementString("CopyToOutputDirectory", "PreserveNewest");
-			f.WriteEndElement(); // Content
+			
+			if (NUSPEC_X_SQLITE_USE_HOME_NUGET_PATH) {
+				f.WriteStartElement("NativeReference");
+				f.WriteAttributeString("Include", string.Format(NUGET_OSX_X_SQLITE_DYLIB, filename));
+				f.WriteElementString("Kind", "Dynamic");
+				f.WriteElementString("SmartLink", "False");
+				f.WriteEndElement();
+			} else {
+				f.WriteStartElement("Content");
+				f.WriteAttributeString("Include", string.Format("$(MSBuildThisFileDirectory)..\\runtimes\\osx-x64\\native\\{0}", filename));
+				f.WriteElementString("Link", filename);
+				f.WriteElementString("CopyToOutputDirectory", "PreserveNewest");
+				f.WriteEndElement(); // Content
+			}
 
 			f.WriteEndElement(); // ItemGroup
 
@@ -4870,8 +4900,8 @@ public static class gen
         foreach (FileInfo file in files)
         {
             string temppath = Path.Combine(destDirName, file.Name);
-            file.CopyTo(temppath, false);
-        }
+            file.CopyTo(temppath, true);
+		}
 
         // If copying subdirectories, copy them and their contents to new location.
         if (copySubDirs)
