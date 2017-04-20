@@ -3094,7 +3094,7 @@ public static class gen
 
 //	public static string NUSPEC_VERSION = string.Format("1.1.2-pre{0}", DateTime.Now.ToString("yyyyMMddHHmmss"));
 	//public static string NUSPEC_VERSION = "1.0.0-PLACEHOLDER";
-	public static string NUSPEC_VERSION = "1.1.2";
+	public static string NUSPEC_VERSION = "1.1.4";
 
 	private const string NUSPEC_RELEASE_NOTES = "1.1.2:  ability to FreezeProvider().  1.1.1:  add support for config_log.  update e_sqlite3 builds to 3.15.2.  fix possible memory corruption when using prepare_v2() with multiple statements.  better errmsg from ugly.step().  add win8 dep groups in bundles.  fix batteries_v2.Init() to be 'last call wins' like the v1 version is.  chg raw.SetProvider() to avoid calling sqlite3_initialize() so that sqlite3_config() can be used.  better support for Xamarin.Mac.  1.1.0:  fix problem with winsqlite3 on UWP.  remove iOS Classic support.  add sqlite3_enable_load_extension.  add sqlite3_config/initialize/shutdown.  add Batteries_V2.Init().  1.0.1:  fix problem with bundle_e_sqlite3 on iOS.  fix issues with .NET Core.  add bundle_sqlcipher.  1.0.0 release:  Contains minor breaking changes since 0.9.x.  All package names now begin with SQLitePCLRaw.  Now supports netstandard.  Fixes for UWP and Android N.  Change all unit tests to xunit.  Support for winsqlite3.dll and custom SQLite builds.";
 
@@ -4691,12 +4691,19 @@ public static class gen
 
 			f.WriteStartElement("ItemGroup");
 			f.WriteAttributeString("Condition", " '$(OS)' == 'Unix' AND Exists('/Library/Frameworks') ");
-
-			f.WriteStartElement("Content");
-			f.WriteAttributeString("Include", string.Format("$(MSBuildThisFileDirectory)..\\runtimes\\osx-x64\\native\\{0}", filename));
-			f.WriteElementString("Link", filename);
-			f.WriteElementString("CopyToOutputDirectory", "PreserveNewest");
-			f.WriteEndElement(); // Content
+			
+			if (filename == "libxsqlite3.dylib") {
+				f.WriteStartElement("NativeReference");
+				f.WriteAttributeString("Include", string.Format("$(MSBuildThisFileDirectory)..\\runtimes\\osx-x64\\native\\{0}", filename));
+				f.WriteElementString("Kind", "Dynamic");
+				f.WriteElementString("SmartLink", "False");
+			} else {
+				f.WriteStartElement("Content");
+				f.WriteAttributeString("Include", string.Format("$(MSBuildThisFileDirectory)..\\runtimes\\osx-x64\\native\\{0}", filename));
+				f.WriteElementString("Link", filename);
+				f.WriteElementString("CopyToOutputDirectory", "PreserveNewest");
+				f.WriteEndElement(); // Content
+			}
 
 			f.WriteEndElement(); // ItemGroup
 
@@ -4871,7 +4878,7 @@ public static class gen
         {
             string temppath = Path.Combine(destDirName, file.Name);
             file.CopyTo(temppath, false);
-        }
+		}
 
         // If copying subdirectories, copy them and their contents to new location.
         if (copySubDirs)
